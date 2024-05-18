@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "659623248782",
+    "project_id": "pharmasage-432af",
+    "storage_bucket": "pharmasage-432af.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659623248782:android:6060586fda88ab4af15adf",
+        "android_client_info": {
+          "package_name": "com.example.pharmasage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBx-l5v4BmFS-yKSioy8JxqY8aci_XmOW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
