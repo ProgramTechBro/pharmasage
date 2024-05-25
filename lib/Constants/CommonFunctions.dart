@@ -4,6 +4,7 @@ import 'package:motion_toast/motion_toast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pharmasage/View/Vendors/LoginPage.dart';
 import '../Utils/widgets/DeleteEmployeeDialog.dart';
+import '../Utils/widgets/DeletePOSProductdialog.dart';
 import '../Utils/widgets/DeleteStoreDialog.dart';
 import '../View/MyProfile.dart';
 import '../utils/colors.dart';
@@ -114,6 +115,19 @@ class CommonFunctions{
           content: content,
           id: id,
 
+        );
+      },
+    );
+  }
+  void showDeletePOSProductDialog(BuildContext context,String title,String content,String id,String storeId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeletePOSProductDialog(
+          title: title,
+          content: content,
+          id: id,
+          storeId:storeId,
         );
       },
     );

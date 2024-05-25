@@ -20,6 +20,7 @@ import 'package:pharmasage/Model/Transaction/TransactionDetails.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../Utils/widgets/Drawer.dart';
 import '../Provider/POSProvider.dart';
 import '../Provider/ProductProvider.dart';
 FirebaseAuth auth=FirebaseAuth.instance;
@@ -34,8 +35,8 @@ class POSController {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
-      final selectFile=result.files.first.name;
-      selectedImageInBytes=result.files.first.bytes;
+      final selectFile = result.files.first.name;
+      selectedImageInBytes = result.files.first.bytes;
       return selectedImageInBytes;
     } else {
       CommonFunctions.showWarningToast(
@@ -54,13 +55,13 @@ class POSController {
     try {
       print('Images $images');
       // Create a temporary file
-     //  final tempDir = await getTemporaryDirectory();
-     //  final tempPath = tempDir.path;
-     //  final file = File('$tempPath/$imageNAme.jpg');
-     //  // Write the image bytes to the file
-     //  await file.writeAsBytes(images);
-     //  print('File :  ******');
-     // print(file);
+      //  final tempDir = await getTemporaryDirectory();
+      //  final tempPath = tempDir.path;
+      //  final file = File('$tempPath/$imageNAme.jpg');
+      //  // Write the image bytes to the file
+      //  await file.writeAsBytes(images);
+      //  print('File :  ******');
+      // print(file);
       // Upload the file to Firebase Storage
       String imageName = '$imageNAme.jpg';
       Reference ref = storage.ref().child('Inventory_Images').child(imageName);
@@ -87,18 +88,19 @@ class POSController {
       await fireStore
           .collection('Inventory')
           .doc(storeId)
-      .collection('Products').doc(productModel.productID)
+          .collection('Products').doc(productModel.productID)
           .set(productModel.toMap()); // Set product details as document fields
       log('Data Added');
       CommonFunctions.showSuccessToast(
           context: context, message: 'Product Added');
-      Provider.of<POSProvider>(context,listen: false).emptyPOSProductImages();
+      Provider.of<POSProvider>(context, listen: false).emptyPOSProductImages();
     } catch (e) {
       print('idr aya############');
       log(e.toString());
       CommonFunctions.showErrorToast(context: context, message: e.toString());
     }
   }
+
   static Future<void> addTransaction({
     required BuildContext context,
     required TransactionModel model,
@@ -110,7 +112,7 @@ class POSController {
       await fireStore
           .collection('Transactions')
           .doc(storeId)
-           .collection('TransactionID').doc(model.transactionID)
+          .collection('TransactionID').doc(model.transactionID)
           .set(model.toMap());
       for (var product in model.selectedProducts!) {
         // Retrieve the document reference for the product
@@ -122,19 +124,23 @@ class POSController {
 
         // Get the current product data
         DocumentSnapshot productSnapshot = await productRef.get();
-        Map<String, dynamic>? productData = (productSnapshot.data() as Map<String, dynamic>?) ?? {};
+        Map<String, dynamic>? productData = (productSnapshot.data() as Map<
+            String,
+            dynamic>?) ?? {};
         // Update the quantity
         int currentQuantity = productData['productQuantity'] ?? 0;
         int soldQuantity = product.productQuantity ?? 0;
         int newQuantity = currentQuantity - soldQuantity;
         print('New Quantity $newQuantity');
-        newQuantity = newQuantity < 0 ? 0 : newQuantity; // Ensure quantity doesn't go negative
+        newQuantity = newQuantity < 0
+            ? 0
+            : newQuantity; // Ensure quantity doesn't go negative
 
         // Update the product quantity in Firestore
         await productRef.update({'productQuantity': newQuantity});
       }
-      Provider.of<POSProvider>(context,listen: false).resetTID();
-      Provider.of<InventoryCartProvider>(context,listen: false).resetBilling();
+      Provider.of<POSProvider>(context, listen: false).resetTID();
+      Provider.of<InventoryCartProvider>(context, listen: false).resetBilling();
       // Show success message
       CommonFunctions.showSuccessToast(
           context: context, message: 'Billing Completed');
@@ -142,8 +148,8 @@ class POSController {
       print('Error occurred: $e');
       CommonFunctions.showErrorToast(context: context, message: e.toString());
     }
-
   }
+
   static Future<TransactionModel?> fetchTransactionById(
       {required String storeId, required String transactionId}) async {
     try {
@@ -177,6 +183,7 @@ class POSController {
       return null;
     }
   }
+
   static Future<void> addReturnedTransaction({
     required BuildContext context,
     required ReturnedProductModel model,
@@ -200,23 +207,27 @@ class POSController {
 
         // Get the current product data
         DocumentSnapshot productSnapshot = await productRef.get();
-        Map<String, dynamic>? productData = (productSnapshot.data() as Map<String, dynamic>?) ?? {};
+        Map<String, dynamic>? productData = (productSnapshot.data() as Map<
+            String,
+            dynamic>?) ?? {};
         // Update the quantity
         int currentQuantity = productData['productQuantity'] ?? 0;
         int returnQuantity = product.productQuantity ?? 0;
         int newQuantity = currentQuantity + returnQuantity;
         print('New Quantity $newQuantity');
-        newQuantity = newQuantity < 0 ? 0 : newQuantity; // Ensure quantity doesn't go negative
+        newQuantity = newQuantity < 0
+            ? 0
+            : newQuantity; // Ensure quantity doesn't go negative
 
         // Update the product quantity in Firestore
         await productRef.update({'productQuantity': newQuantity});
       }
-     // print('hello DB124//////////////////');
+      // print('hello DB124//////////////////');
       // CommonFunctions.showSuccessToast(
       //     context: context, message: 'Return Completed');
-      Provider.of<POSProvider>(context,listen: false).updateAfterReturned();
-     Provider.of<ReturnProvider>(context,listen: false).resetAllData();
-     //print('Yaha tak ata ha bus');
+      Provider.of<POSProvider>(context, listen: false).updateAfterReturned();
+      Provider.of<ReturnProvider>(context, listen: false).resetAllData();
+      //print('Yaha tak ata ha bus');
       // Show success message
       CommonFunctions.showSuccessToast(
           context: context, message: 'Return Completed');
@@ -224,7 +235,92 @@ class POSController {
       print('Error occurred: $e');
       CommonFunctions.showErrorToast(context: context, message: e.toString());
     }
-
   }
 
+  static Future<void> deletePOSProduct({
+    required BuildContext context,
+    required String productId,
+    required String storeId,
+  }) async {
+    try {
+      String imageName = '$productId.jpg';
+      await deletePOSProductImageFromFirebaseStorage(imageName);
+      await firestore.collection('Inventory')
+          .doc(storeId).collection('Products').doc(
+          productId) // Use StoreId as document ID
+          .delete(); // Delete the document
+      log('Product Deleted');
+      //Navigator.pop(context);
+      CommonFunctions.showSuccessToast(
+          context: context, message: 'Product Deleted');
+    } catch (e) {
+      log('Error deleting store: $e');
+      CommonFunctions.showErrorToast(
+          context: context, message: 'Failed to delete Product');
+    }
+  }
+
+  static Future<void> deletePOSProductImageFromFirebaseStorage(
+      String imageName) async {
+    try {
+      Reference ref = FirebaseStorage.instance.ref()
+          .child('Inventory_Images')
+          .child(imageName);
+      await ref.delete();
+      print('Image deleted from Firebase Storage: $imageName');
+    } catch (e) {
+      print('Error deleting image from Firebase Storage: $e');
+    }
+  }
+
+  static Future<void> uploadUpdatedPOSProductImageToFirebaseStorage({
+    required Uint8List images,
+    required BuildContext context,
+    required dynamic imageNAme,
+  }) async {
+    try {
+      print('Images $images');
+      // Create a temporary file
+      //  final tempDir = await getTemporaryDirectory();
+      //  final tempPath = tempDir.path;
+      //  final file = File('$tempPath/$imageNAme.jpg');
+      //  // Write the image bytes to the file
+      //  await file.writeAsBytes(images);
+      //  print('File :  ******');
+      // print(file);
+      // Upload the file to Firebase Storage
+      String imageName = '$imageNAme.jpg';
+      await deletePOSProductImageFromFirebaseStorage(imageName);
+      Reference ref = storage.ref().child('Inventory_Images').child(imageName);
+      final metaData = SettableMetadata(contentType: 'images/png');
+      await ref.putData(images);
+      // Get the download URL and update the provider
+      String imageURL = await ref.getDownloadURL();
+      Provider.of<POSProvider>(context, listen: false)
+          .updatePOSProductImagesURL(imagesURLs: imageURL);
+
+      print('Upload successful');
+    } catch (error) {
+      print('Error uploading image: $error');
+    }
+  }
+
+  static Future<void> updatePOSProductData(
+      {required BuildContext context, required InventoryProduct details, required String storeId}) async
+  {
+    try {
+      await fireStore
+          .collection('Inventory')
+          .doc(storeId).collection('Products').doc(details.productID)
+          .update(details.toMap())
+          .whenComplete(() {
+        log('Data Updated');
+        CommonFunctions.showSuccessToast(
+            context: context, message: 'Changes Saved');
+      });
+    } catch (e) {
+      log(e.toString());
+      CommonFunctions.showErrorToast(context: context, message: e.toString());
+    }
+  }
 }

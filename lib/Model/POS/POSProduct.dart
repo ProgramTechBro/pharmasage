@@ -52,10 +52,10 @@ class InventoryProduct {
       map['productQuantity'] != null ? map['productQuantity'] as int : null,
       lowStockWarning:
       map['lowStockWarning'] != null ? map['lowStockWarning'] as int : null,
-      costPrice: map['costPrice'] != null ? (map['costPrice'] as num).toDouble() : null,
-      sellingPrice: map['sellingPrice'] != null ? (map['sellingPrice'] as num).toDouble() : null,
-      // costPrice: map['costPrice'] != null ? map['costPrice'] as double : null,
-      // sellingPrice: map['sellingPrice'] != null ? map['sellingPrice'] as double : null,
+      // costPrice: map['costPrice'] != null ? (map['costPrice'] as num).toDouble() : null,
+      // sellingPrice: map['sellingPrice'] != null ? (map['sellingPrice'] as num).toDouble() : null,
+      costPrice: map['costPrice'] != null ? map['costPrice'] as double : null,
+      sellingPrice: map['sellingPrice'] != null ? map['sellingPrice'] as double : null,
 
 
     );

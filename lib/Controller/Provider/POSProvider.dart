@@ -41,6 +41,10 @@ class POSProvider extends ChangeNotifier{
     posImageUrL='';
     notifyListeners();
   }
+  removePOSImage(){
+    posProductImage = null;
+    notifyListeners();
+  }
   updateTID(String newValue)
   {
     tID=newValue;

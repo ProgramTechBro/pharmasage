@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pharmasage/View/POS/EditPosimage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Constants/CommonFunctions.dart';
@@ -26,6 +27,7 @@ class _InventoryProState extends State<InventoryPro> {
   void initState() {
     super.initState();
     _initializeState();
+    print('Hello g');
   }
 
   Future<void> _initializeState() async {
@@ -259,6 +261,9 @@ class _InventoryProState extends State<InventoryPro> {
                                 style: textTheme.bodySmall!
                                     .copyWith(fontWeight: FontWeight.bold, color: Colors.grey)),
                             SizedBox(width: width * 0.04),
+                            Text('ACTIONS',
+                                style: textTheme.bodySmall!
+                                    .copyWith(fontWeight: FontWeight.bold, color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -348,7 +353,7 @@ class _InventoryProState extends State<InventoryPro> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: width * 0.06),
+                                      SizedBox(width: width * 0.05),
                                       Container(
                                         width: width * 0.08,
                                         height: height * 0.08,
@@ -381,7 +386,27 @@ class _InventoryProState extends State<InventoryPro> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: width * 0.08),
+                                      SizedBox(width: width * 0.07),
+                                      Container(
+                                        width: width * 0.08,
+                                        height: height * 0.08,
+                                        child: Center(
+                                          child: Row(
+                                            children: [
+                                              TextButton(onPressed: (){
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) => EditPOSProduct(product: product,storeId: storeId,)),
+                                                );
+                                              }, child: Text('Edit',style: textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600),),),
+                                              TextButton(onPressed: (){
+                                                functions.showDeletePOSProductDialog(context,'Delete Product','Are you Sure you want to delete this Product?',product['productID'] ?? '',storeId);
+                                              }, child: Text('Delete',style: textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600),),),
+                                            ],
+                                          )
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pharmasage/Controller/Provider/InventoryCartProvider.dart';
+import 'package:pharmasage/View/POS/POSSplash.dart';
 import 'package:pharmasage/View/SplashScreen.dart';
 import 'package:provider/provider.dart';
 import 'Controller/Provider/Authprovider.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: theme,
-    home: SplashScreen(),
+    home: POSSplash(),
     //home: const ForgetPassword(key: key, email: email),
     ),
     );
