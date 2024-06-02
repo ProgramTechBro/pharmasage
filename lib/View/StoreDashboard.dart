@@ -28,12 +28,13 @@ class _storeDashboardState extends State<storeDashboard> {
   var currentPage = DrawerSections.statistics;
   var appBarTitle = 'Statistics';
   Widget build(BuildContext context) {
+    final provider=Provider.of<AdminProvider>(context);
     var container;
     final height = MediaQuery.sizeOf(context).height;
     final width = MediaQuery.sizeOf(context).width;
     final textTheme=Theme.of(context).textTheme;
     if (currentPage == DrawerSections.statistics) {
-      container =  const SatisticsPage();
+      container =  StatisticsPage(storeId: widget.branchID,);
     } else if (currentPage == DrawerSections.sales) {
       container = SalesPage(branchId: widget.branchID,);
     }
@@ -73,7 +74,7 @@ class _storeDashboardState extends State<storeDashboard> {
                 title:Text(appBarTitle, style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
                 centerTitle: true,
                 actions: [
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.notifications,color: Colors.white,)),
+                  provider.role=='Branch Manager'?IconButton(onPressed: (){}, icon: const Icon(Icons.notifications,color: Colors.white,)):Container(),
                   CommonFunctions.commonSpace(0, width * 0.02),
                   InkWell(
                     onTap: () {

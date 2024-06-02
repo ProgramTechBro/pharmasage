@@ -70,8 +70,8 @@ class _InvoicePageState extends State<InvoicePage> {
       isSearchingInvoice=false;
     });
     print('hello');
-    final Uint8List pdfFile = await TransactionPdfInvoiceApi.generate(invoice);
-    await TransactionFileHandleApi.openFile(pdfFile, 'TransactionInvoice.pdf');
+    // final Uint8List pdfFile = await TransactionPdfInvoiceApi.generate(invoice);
+    // await TransactionFileHandleApi.openFile(pdfFile, 'TransactionInvoice.pdf');
 
   }
   @override

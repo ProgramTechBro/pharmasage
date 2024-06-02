@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pharmasage/Controller/AdminController/ProductController.dart';
+import 'package:pharmasage/Controller/Provider/Authprovider.dart';
+import 'package:provider/provider.dart';
 import '../Constants/CommonFunctions.dart';
 import '../Controller/Service/Invoicepdf.dart';
 import '../Controller/Service/pdfApi.dart';
@@ -82,6 +84,7 @@ class _OrdersDetailsState extends State<OrdersDetails> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final textTheme = Theme.of(context).textTheme;
+    final provider=Provider.of<AdminProvider>(context);
     final filteredOrders = filterOrdersByCategory(selectedCategory);
 
     return SafeArea(
@@ -239,7 +242,7 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          ElevatedButton(
+                                          provider.role=='Branch Manager'?ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: primaryColor,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
@@ -248,16 +251,18 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                             onPressed: isOrderCompleting[index]
                                                 ? null // Disable button when completing
                                                 : () async {
-                                              setState(() {
-                                                isOrderCompleting[index] = true; // Mark as completing
-                                              });
-                                              await controller.completeOrder(order['orderID']);
-                                              CommonFunctions.showSuccessToast(context: context, message: 'Order Completed');
-                                              setState(() {
-                                                isOrderCompleting[index] = false; // Mark as completed
-                                              });
-                                              // Reload the orders to reflect changes
-                                              await fetchOrders();
+                                              if(order['orderStatus']!='Completed'){
+                                                setState(() {
+                                                  isOrderCompleting[index] = true; // Mark as completing
+                                                });
+                                                await controller.completeOrder(order['orderID']);
+                                                CommonFunctions.showSuccessToast(context: context, message: 'Order Completed');
+                                                setState(() {
+                                                  isOrderCompleting[index] = false; // Mark as completed
+                                                });
+                                                // Reload the orders to reflect changes
+                                                await fetchOrders();
+                                              }
                                             },
                                             child: isOrderCompleting[index]
                                                 ? const CircularProgressIndicator(color: Colors.white)
@@ -268,7 +273,7 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                                 color: Colors.white,
                                               ),
                                             ),
-                                          ),
+                                          ):Container(),
                                           InkWell(
                                             onTap: () async{
                                               final store=await fetchStoreData(order['storeId']);

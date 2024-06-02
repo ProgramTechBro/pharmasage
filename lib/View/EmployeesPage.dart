@@ -59,7 +59,7 @@ class _EmployeePageState extends State<EmployeePage> {
               itemCount: employees.length,
               scrollDirection: Axis.vertical,
               separatorBuilder: (BuildContext context, int index) {
-                return SizedBox(height: height * 0.02); // Adjust the height as needed
+                return SizedBox(height: height * 0.01); // Adjust the height as needed
               },
               itemBuilder: (context, index) {
                 final employeeData = employees[index].data() as Map<String, dynamic>;

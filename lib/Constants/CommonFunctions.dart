@@ -119,7 +119,7 @@ class CommonFunctions{
       },
     );
   }
-  void showDeletePOSProductDialog(BuildContext context,String title,String content,String id,String storeId) {
+  void showDeletePOSProductDialog(BuildContext context,String title,String content,String id,String storeId)  {
     showDialog(
       context: context,
       builder: (BuildContext context) {

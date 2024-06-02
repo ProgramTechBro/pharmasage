@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pharmasage/Constants/CommonFunctions.dart';
 import 'package:pharmasage/Controller/AdminController/StoreController.dart';
 import 'package:pharmasage/Utils/colors.dart';
+import 'package:pharmasage/View/POS/InventoryProduct.dart';
 
 import '../../Controller/AdminController/POSController.dart';
 
@@ -50,7 +51,6 @@ class _DeletePOSProductDialogState extends State<DeletePOSProductDialog> {
                 print('Helooooooooooooooooooooooooo');
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-
                 setState(() {
                   _isDeleting = false; // Hide circular indicator
                 });

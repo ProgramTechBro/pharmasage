@@ -402,6 +402,8 @@ class _InventoryProState extends State<InventoryPro> {
                                               }, child: Text('Edit',style: textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600),),),
                                               TextButton(onPressed: (){
                                                 functions.showDeletePOSProductDialog(context,'Delete Product','Are you Sure you want to delete this Product?',product['productID'] ?? '',storeId);
+                                                setState(() {
+                                                });
                                               }, child: Text('Delete',style: textTheme.labelSmall!.copyWith(fontWeight: FontWeight.w600),),),
                                             ],
                                           )

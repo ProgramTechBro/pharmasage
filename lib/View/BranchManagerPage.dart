@@ -117,7 +117,7 @@ class _BranchManagerState extends State<BranchManager> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                // Implement delete functionality
+                                                
                                               },
                                               child: Container(
                                                 height: height * 0.07,

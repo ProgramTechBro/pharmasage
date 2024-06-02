@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pharmasage/Constants/CommonFunctions.dart';
 import 'package:pharmasage/Controller/Provider/Authprovider.dart';
 import 'package:pharmasage/Controller/Service/Admin/vendorServices.dart';
 import '../../Model/BranchManager/BranchManager.dart';
@@ -30,52 +31,98 @@ class MyHeaderDrawer extends StatelessWidget {
         print(role);
         if(role=='Pharmacist' || role=='Vendor')
           {
-            final vendorDetail = UserProfile.fromMap(vendorDetailMap);
-            return Container(
-              color: primaryColor,
-              width: double.infinity,
-              height: 200,
-              padding: EdgeInsets.only(top: height * 0.035),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: height * 0.01),
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: vendorDetail.imagesURL != 'NULL'
-                            ? NetworkImage(vendorDetail.imagesURL!) as ImageProvider<Object>
-                            : const AssetImage('assets/images/farmer.png'),
+            if(role=='Pharmacist'){
+              final vendorDetail = UserProfile.fromMap(vendorDetailMap);
+              return Container(
+                color: primaryColor,
+                width: double.infinity,
+                height: 250,
+                padding: EdgeInsets.only(top: height * 0.035),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: height * 0.01),
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: vendorDetail.imagesURL != 'NULL'
+                              ? NetworkImage(vendorDetail.imagesURL!) as ImageProvider<Object>
+                              : const AssetImage('assets/images/farmer.png'),
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    vendorDetail.fullName ?? 'No Data', // Display full name if available
-                    style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
-                  ),
-                  Text(
-                    vendorDetail.email ?? 'No data', // Display email if available
-                    style: textTheme.labelLarge!.copyWith(color: Colors.white),
-                  ),
-                ],
-              ),
-            );
+                    Text(
+                      'Admin', // Display full name if available
+                      style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500,color: Colors.white),
+                    ),
+                    Text(
+                      vendorDetail.fullName ?? 'No Data', // Display full name if available
+                      style: textTheme.bodyMedium!.copyWith(color: Colors.white),
+                    ),
+                    Text(
+                      vendorDetail.email ?? 'No data', // Display email if available
+                      style: textTheme.labelLarge!.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              );
+            }
+            else{
+              final vendorDetail = UserProfile.fromMap(vendorDetailMap);
+              return Container(
+                color: primaryColor,
+                width: double.infinity,
+                height: 250,
+                padding: EdgeInsets.only(top: height * 0.035),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: height * 0.01),
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: vendorDetail.imagesURL != 'NULL'
+                              ? NetworkImage(vendorDetail.imagesURL!) as ImageProvider<Object>
+                              : const AssetImage('assets/images/farmer.png'),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Vendor', // Display full name if available
+                      style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500,color: Colors.white),
+                    ),
+                    Text(
+                      vendorDetail.fullName ?? 'No Data', // Display full name if available
+                      style: textTheme.bodyMedium!.copyWith(color: Colors.white),
+                    ),
+                    Text(
+                      vendorDetail.email ?? 'No data', // Display email if available
+                      style: textTheme.labelLarge!.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+
           }
         else{
           final bmData = BranchManagerData.fromMap(vendorDetailMap);
           return Container(
             color: primaryColor,
             width: double.infinity,
-            height: 200,
+            height: 250,
             padding: EdgeInsets.only(top: height * 0.035),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   margin: EdgeInsets.only(bottom: height * 0.01),
-                  height: 80,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
@@ -86,8 +133,12 @@ class MyHeaderDrawer extends StatelessWidget {
                   ),
                 ),
                 Text(
+                  'Branch Manager', // Display full name if available
+                  style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500,color: Colors.white),
+                ),
+                Text(
                   bmData.bMFullName ?? 'No Data', // Display full name if available
-                  style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500, color: Colors.white),
+                  style: textTheme.bodyMedium!.copyWith(color: Colors.white),
                 ),
                 Text(
                   bmData.bMUserName ?? 'No data', // Display email if available

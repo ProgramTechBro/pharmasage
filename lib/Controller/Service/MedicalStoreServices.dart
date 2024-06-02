@@ -8,7 +8,7 @@ import 'package:pharmasage/Model/MedicalStore/MedicalStore.dart';
 
 import '../../Constants/CommonFunctions.dart';
 
-class MedicalStoreServices{
+class StoreHandler{
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore fireStore=FirebaseFirestore.instance;
   FirebaseStorage storage = FirebaseStorage.instance;

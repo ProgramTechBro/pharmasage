@@ -104,7 +104,7 @@ class _ReturnPageState extends State<ReturnPage> {
                   ReturnFileHandleApi.openFile(pdfFile);
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.02),
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.005),
                   child: Card(
                     color: grey,
                     shape: const RoundedRectangleBorder(

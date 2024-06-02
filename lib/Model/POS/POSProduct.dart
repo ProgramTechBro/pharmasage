@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 class InventoryProduct {
   final String? productExpiry;
   final String? productImage;
@@ -52,12 +54,26 @@ class InventoryProduct {
       map['productQuantity'] != null ? map['productQuantity'] as int : null,
       lowStockWarning:
       map['lowStockWarning'] != null ? map['lowStockWarning'] as int : null,
-      // costPrice: map['costPrice'] != null ? (map['costPrice'] as num).toDouble() : null,
-      // sellingPrice: map['sellingPrice'] != null ? (map['sellingPrice'] as num).toDouble() : null,
-      costPrice: map['costPrice'] != null ? map['costPrice'] as double : null,
-      sellingPrice: map['sellingPrice'] != null ? map['sellingPrice'] as double : null,
+      costPrice: map['costPrice'] != null ? (map['costPrice'] as num).toDouble() : null,
+      sellingPrice: map['sellingPrice'] != null ? (map['sellingPrice'] as num).toDouble() : null,
+      // costPrice: map['costPrice'] != null ? map['costPrice'] as double : null,
+      // sellingPrice: map['sellingPrice'] != null ? map['sellingPrice'] as double : null,
 
 
+    );
+  }
+  factory InventoryProduct.fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return InventoryProduct(
+      productExpiry: data['productExpiry'] != null ? data['productExpiry'] as String : null,
+      productImage: data['productImage'] != null ? data['productImage'] as String : null,
+      productID: data['productID'] != null ? data['productID'] as String : null,
+      productName: data['productName'] != null ? data['productName'] as String : null,
+      productCategory: data['productCategory'] != null ? data['productCategory'] as String : null,
+      productQuantity: data['productQuantity'] != null ? data['productQuantity'] as int : null,
+      lowStockWarning: data['lowStockWarning'] != null ? data['lowStockWarning'] as int : null,
+      costPrice: data['costPrice'] != null ? (data['costPrice'] as num).toDouble() : null,
+      sellingPrice: data['sellingPrice'] != null ? (data['sellingPrice'] as num).toDouble() : null,
     );
   }
 

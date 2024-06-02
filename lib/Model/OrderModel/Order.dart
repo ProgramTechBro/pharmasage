@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../Product/Productdetails.dart';
 class OrderModel {
   late String? orderID;
@@ -54,6 +56,24 @@ class OrderModel {
       orderedProducts: map['orderedProducts'] != null ? List<Product>.from((map['orderedProducts'] as List<dynamic>).map((item) => Product.fromMap(item as Map<String, dynamic>))) : null,
     );
   }
+  factory OrderModel.fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return OrderModel(
+      orderID: data['orderID'] != null ? data['orderID'] as String : null,
+      orderDate: data['orderDate'] != null ? data['orderDate'] as String : null,
+      orderTime: data['orderTime'] != null ? data['orderTime'] as String : null,
+      orderStatus: data['orderStatus'] != null ? data['orderStatus'] as String : null,
+      vendorName: data['vendorName'] != null ? data['vendorName'] as String : null,
+      vendorEmail: data['vendorEmail'] != null ? data['vendorEmail'] as String : null,
+      vendorContact: data['vendorContact'] != null ? data['vendorContact'] as String : null,
+      totalAmount: data['totalAmount'] != null ? data['totalAmount'] as int : null,
+      storeId: data['storeId'] != null ? data['storeId'] as String : null,
+      orderedProducts: data['orderedProducts'] != null ? List<Product>.from((data['orderedProducts'] as List<dynamic>).map((item) => Product.fromMap(item as Map<String, dynamic>))) : null,
+    );
+  }
+
+
+
 
   String toJson() => json.encode(toMap());
 

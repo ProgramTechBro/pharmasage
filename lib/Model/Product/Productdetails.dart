@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 class Product {
   final String? productSellerId;
   final String? productImage;
@@ -54,6 +56,21 @@ class Product {
 
     );
   }
+  factory Product.fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    return Product(
+      productSellerId: data['productSellerId'] != null ? data['productSellerId'] as String : null,
+      productImage: data['productImage'] != null ? data['productImage'] as String : null,
+      productID: data['productID'] != null ? data['productID'] as String : null,
+      productName: data['productName'] != null ? data['productName'] as String : null,
+      productCategory: data['productCategory'] != null ? data['productCategory'] as String : null,
+      productCompany: data['productCompany'] != null ? data['productCompany'] as String : null,
+      productPrice: data['productPrice'] != null ? (data['productPrice'] as num).toDouble() : null,
+      quantity: data['quantity'] != null ? data['quantity'] as int : null,
+    );
+  }
+
+
 
   String toJson() => json.encode(toMap());
 

@@ -88,7 +88,7 @@ class _VendorPageState extends State<VendorPage> {
                     itemCount: users.length,
                     scrollDirection: Axis.vertical,
                     separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: height * 0.02);
+                      return SizedBox(height: height * 0.002);
                     },
                     itemBuilder: (context, index) {
                       final userData = users[index].data() as Map<String, dynamic>;

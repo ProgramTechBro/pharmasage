@@ -82,7 +82,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                             ),
                             CommonFunctions.commonSpace(height * 0.01, 0),
                             Text(
-                              'Pharmacist',
+                              'Admin',
                               style: textTheme.displaySmall!.copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.5,

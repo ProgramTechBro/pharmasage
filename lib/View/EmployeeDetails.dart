@@ -22,9 +22,9 @@ class _EmployeeDetailsState extends State<EmployeeDetails> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: primaryColor,
-          title:Text('Employee Details', style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
+          title:Text('Employee Details', style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
           centerTitle: true,
-          automaticallyImplyLeading: false,
+          //automaticallyImplyLeading: false,
         ),
       body: SingleChildScrollView(
         child: Container(

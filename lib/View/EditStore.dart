@@ -10,7 +10,7 @@ import '../Controller/AdminController/StoreController.dart';
 import '../Controller/Provider/StoreProvider.dart';
 import '../Utils/colors.dart';
 //StoreController controller=StoreController();
-MedicalStoreServices services=MedicalStoreServices();
+StoreHandler services=StoreHandler();
 class EditStore extends StatefulWidget {
   final Map<String, dynamic> storeData;
 

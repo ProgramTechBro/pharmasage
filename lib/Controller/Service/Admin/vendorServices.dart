@@ -158,7 +158,7 @@ class UserHandler {
       print(error.toString());
     }
   }
-  Future<void> updateBMPassword(BuildContext context,String newPassword) async {
+   Future<void> updateBMPassword(BuildContext context,String newPassword) async {
     Provider.of<AdminProvider>(context,listen: false).setUpdateStatus();
     try {
       // Get a reference to the document you want to update
