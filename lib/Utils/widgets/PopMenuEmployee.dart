@@ -4,11 +4,23 @@ import 'package:pharmasage/View/BranchManagerPage.dart';
 import '../../View/EditEmployee.dart';
 import '../../View/EditStore.dart';
 import 'PopMenuProfile.dart';
-class YourEmployeeWidget extends StatelessWidget {
+class YourEmployeeWidget extends StatefulWidget {
   final Map<String, dynamic> employeeData;
 
   YourEmployeeWidget({required this.employeeData});
 
+  @override
+  State<YourEmployeeWidget> createState() => _YourEmployeeWidgetState();
+}
+
+class _YourEmployeeWidgetState extends State<YourEmployeeWidget> {
+  late Map<String, dynamic> employeeDetail;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    employeeDetail=widget.employeeData;
+  }
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -46,9 +58,9 @@ class YourEmployeeWidget extends StatelessWidget {
 
   void handleStoreAction(BuildContext context, StoreAction action) {
     if (action == StoreAction.edit) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => EditEmployee()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => EditEmployee(employeeData: employeeDetail,)));
     } else if (action == StoreAction.delete) {
-      common.showDeleteEmployeeDialog(context,'Delete Store','Are you Sure you want to delete this Employee?',employeeData['employeeID'],employeeData['employeeBranchID']);
+      common.showDeleteEmployeeDialog(context,'Delete Store','Are you Sure you want to delete this Employee?',widget.employeeData['employeeID'],widget.employeeData['employeeBranchID']);
     }
   }
 }

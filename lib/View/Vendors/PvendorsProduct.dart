@@ -31,6 +31,9 @@ class _vendorProductsState extends State<vendorProducts> {
            );
          },
          child: Icon(Icons.add,color: white,),
+         shape: RoundedRectangleBorder(
+           borderRadius: BorderRadius.all(Radius.circular(15.0)),
+         ),
        ),
         body: ProductsGrid(),
       ),

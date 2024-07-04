@@ -6,6 +6,7 @@ import 'package:pharmasage/View/Vendors/LoginPage.dart';
 import '../Utils/widgets/DeleteEmployeeDialog.dart';
 import '../Utils/widgets/DeletePOSProductdialog.dart';
 import '../Utils/widgets/DeleteStoreDialog.dart';
+import '../Utils/widgets/deleteBranchManagerDailog.dart';
 import '../View/MyProfile.dart';
 import '../utils/colors.dart';
 FirebaseAuth auth=FirebaseAuth.instance;
@@ -141,6 +142,18 @@ class CommonFunctions{
           content: content,
           empId: empId,
           storeId: branchId,
+        );
+      },
+    );
+  }
+  void showDeleteBranchManagerDialog(BuildContext context,String title,String content,String bId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteBranchManagerDialog(
+          title: title,
+          content: content,
+          bId:bId,
         );
       },
     );

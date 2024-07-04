@@ -7,41 +7,32 @@ import '../Constants/CommonFunctions.dart';
 import '../Utils/colors.dart';
 import '../Utils/widgets/InputTextFiellds.dart';
 UserHandler handler=UserHandler();
-class ChangePassword extends StatefulWidget {
-  const ChangePassword({super.key});
+class ChangeBMPassword extends StatefulWidget {
+  const ChangeBMPassword({super.key});
 
   @override
-  State<ChangePassword> createState() => _ChangePasswordState();
+  State<ChangeBMPassword> createState() => _ChangeBMPasswordState();
 }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class _ChangeBMPasswordState extends State<ChangeBMPassword> {
   var auth=FirebaseAuth.instance;
   var currentUser=FirebaseAuth.instance.currentUser;
   late TextEditingController emailController=TextEditingController();
   late TextEditingController oldPasswordController=TextEditingController();
   late TextEditingController newPasswordController=TextEditingController();
-  bool isPasswordPressed = false;
-  late String currentRole;
+  bool isBMPressed = false;
   @override
   void onpressed({required String email, required String oldPassword, required String newPassword}) async {
     setState(() {
-      isPasswordPressed = true;
+      isBMPressed = true;
     });
     await handler.changePassword(email: email, oldPassword: oldPassword, newPassword: newPassword);
-    if(currentRole=='Branch Manager')
-      {
-       await handler.updateBMPassword(context, newPassword);
-      }
+      await handler.updateBMPassword(context, newPassword);
     setState(() {
-      isPasswordPressed = false;
+      isBMPressed = false;
     });
   }
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    currentRole = Provider.of<AdminProvider>(context, listen: false).role;
-  }
+  @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -50,9 +41,8 @@ class _ChangePasswordState extends State<ChangePassword> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: primaryColor,
-          title:Text('Change Password', style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
+          title:Text('Change Password', style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
           centerTitle: true,
-          automaticallyImplyLeading: false,
         ),
         body: Container(
           height: height,
@@ -62,9 +52,9 @@ class _ChangePasswordState extends State<ChangePassword> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CommonFunctions.commonSpace(height*0.03, 0),
-              Text('Change your password:',style: textTheme.bodyMedium),
+              Text('Change your password:',style: textTheme.labelLarge),
               CommonFunctions.commonSpace(height*0.06, 0),
-              Text('Email/UserName',style: textTheme.bodyMedium),
+              Text('Email/UserName',style: textTheme.bodySmall),
               CommonFunctions.commonSpace(height*0.015, 0),
               InputTextFieldSeller(
                 controller: emailController,
@@ -72,7 +62,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 textTheme: textTheme,
               ),
               CommonFunctions.commonSpace(height*0.03, 0),
-              Text('Old Password',style: textTheme.bodyMedium),
+              Text('Old Password',style: textTheme.bodySmall),
               CommonFunctions.commonSpace(height*0.015, 0),
               InputTextFieldSeller(
                 controller: oldPasswordController,
@@ -80,7 +70,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 textTheme: textTheme,
               ),
               CommonFunctions.commonSpace(height*0.03, 0),
-              Text('New Password',style: textTheme.bodyMedium),
+              Text('New Password',style: textTheme.bodySmall),
               CommonFunctions.commonSpace(height*0.015, 0),
               InputTextFieldSeller(
                 controller: newPasswordController,
@@ -99,7 +89,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 onPressed: ()async{
                   onpressed(email:emailController.text, oldPassword: oldPasswordController.text, newPassword: newPasswordController.text);
                 },
-                child: isPasswordPressed
+                child: isBMPressed
                     ? CircularProgressIndicator(color: white)
                     : Text(
                   'Add Store',
@@ -145,3 +135,4 @@ class _ChangePasswordState extends State<ChangePassword> {
     );
   }
 }
+

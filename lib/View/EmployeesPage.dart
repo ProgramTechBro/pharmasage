@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pharmasage/Utils/colors.dart';
 import 'package:pharmasage/Utils/widgets/PopMenuEmployee.dart';
 import 'package:pharmasage/View/AddEmployee.dart';
 import 'package:provider/provider.dart';
-
 import '../Constants/CommonFunctions.dart';
 import '../Controller/Provider/Authprovider.dart';
 import 'EmployeeDetails.dart';
@@ -25,6 +23,11 @@ class _EmployeePageState extends State<EmployeePage> {
   @override
   void initState() {
     super.initState();
+    print('Here I am in initState');
+    fetchEmployees();
+  }
+
+  void fetchEmployees() {
     employeeStream = FirebaseFirestore.instance
         .collection('Employees')
         .doc(widget.branchId)
@@ -66,12 +69,12 @@ class _EmployeePageState extends State<EmployeePage> {
 
                 return GestureDetector(
                   onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EmployeeDetails(employeeData: employeeData),
-                    ),
-                  );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmployeeDetails(employeeData: employeeData),
+                      ),
+                    );
                   },
                   child: Card(
                     color: grey,

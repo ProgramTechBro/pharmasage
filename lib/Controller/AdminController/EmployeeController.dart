@@ -48,6 +48,22 @@ class EmployeeController {
     Provider.of<EmployeeProvider>(context, listen: false).updateEmployeeImagesURL(
         imagesURLs: imageURL);
   }
+  static uploadUpdatedEmployeeImageToFirebaseStorage({
+    required File images,
+    required BuildContext context,
+    required String imageNAme,
+  }) async {
+
+
+    String imageName = '$imageNAme.jpg';
+    await deleteImageFromFirebaseStorage(imageName);
+    Reference ref = storage.ref().child('Employee_Images').child(imageName);
+    await ref.putFile(File(images.path));
+    String imageURL = await ref.getDownloadURL();
+    print('////Image Url is $imageURL');
+    Provider.of<EmployeeProvider>(context, listen: false).updatedUpdatedEmployeeImageURL(
+        imagesURLs: imageURL);
+  }
 
   static Future<void> addEmployee({
     required BuildContext context,
@@ -101,6 +117,45 @@ class EmployeeController {
       print('Image deleted from Firebase Storage: $imageName');
     } catch (e) {
       print('Error deleting image from Firebase Storage: $e');
+    }
+  }
+  Future<void> updateEmployeeData({required BuildContext context,required Employees details})async
+  {
+    try {
+      await FirebaseFirestore.instance
+          .collection('Employees')
+          .doc(details.employeeBranchID).collection('Employee ID').doc(details.employeeID)
+          .update(details.toMap())
+          .whenComplete(() {
+        log('Data Updated');
+        CommonFunctions.showSuccessToast(
+            context: context, message: 'Changes Saved');
+        Provider.of<EmployeeProvider>(context,listen: false).emptyUpdatedEmployeeImagesURL();
+      });
+    } catch (e) {
+      log(e.toString());
+      CommonFunctions.showErrorToast(context: context, message: e.toString());
+    }
+
+  }
+  Future<Map<String, dynamic>> getEmployeeData(String employeeId,String bid) async {
+    try {
+      // Assuming 'employees' is your collection in Firestore
+      print(employeeId);
+      print(bid);
+      DocumentSnapshot employeeSnapshot =
+      await FirebaseFirestore.instance.collection('Employees').doc(employeeId).collection('Employee ID').doc(bid).get();
+
+      if (employeeSnapshot.exists) {
+        Map<String, dynamic> employeeData = employeeSnapshot.data() as Map<String, dynamic>;
+        print('Here');
+        return employeeData;
+      } else {
+        throw Exception('Employee not found');
+      }
+    } catch (e) {
+      print('Error fetching employee data: $e');
+      throw Exception('Failed to fetch employee data');
     }
   }
 

@@ -19,36 +19,39 @@ class _AddBranchManagerState extends State<AddBranchManager> {
   TextEditingController branchIDController = TextEditingController();
   TextEditingController bmPasswordController = TextEditingController();
   bool addStoreBtnPressed = false;
+  final _formKey = GlobalKey<FormState>();
 
   void onPressed() async {
-    print('chal v');
-    setState(() {
-      addStoreBtnPressed = true;
-    });
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
+      setState(() {
+        addStoreBtnPressed = true;
+      });
 
-    BranchManagerData bmDetails = BranchManagerData(
-      branchManagerImage: 'NULL',
-      bMUserName: bmUserNameController.text,
-      bMFullName: bmFullNameController.text,
-      branchID: branchIDController.text,
-      bMPassword: bmPasswordController.text,
-      role: 'Branch Manager',
-    );
+      BranchManagerData bmDetails = BranchManagerData(
+        branchManagerImage: 'NULL',
+        bMUserName: bmUserNameController.text,
+        bMFullName: bmFullNameController.text,
+        branchID: branchIDController.text,
+        bMPassword: bmPasswordController.text,
+        role: 'Branch Manager',
+      );
 
-    await UserController.createBranchManager(
-      context: context,
-      data: bmDetails,
-    );
+      await UserController.createBranchManager(
+        context: context,
+        data: bmDetails,
+      );
 
-    bmUserNameController.clear();
-    bmFullNameController.clear();
-    branchIDController.clear();
-    bmPasswordController.clear();
+      bmUserNameController.clear();
+      bmFullNameController.clear();
+      branchIDController.clear();
+      bmPasswordController.clear();
 
-    setState(() {
-      addStoreBtnPressed = false;
-    });
-    //Provider.of<AdminProvider>(context)
+      setState(() {
+        addStoreBtnPressed = false;
+      });
+
+    }
   }
 
   @override
@@ -63,7 +66,7 @@ class _AddBranchManagerState extends State<AddBranchManager> {
           backgroundColor: primaryColor,
           title: Text(
             'Add Branch Manager',
-            style: textTheme.displaySmall!.copyWith(
+            style: textTheme.bodySmall!.copyWith(
               fontWeight: FontWeight.w500,
               color: Colors.white,
             ),
@@ -77,67 +80,94 @@ class _AddBranchManagerState extends State<AddBranchManager> {
               horizontal: width * 0.06,
               vertical: height * 0.02,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CommonFunctions.commonSpace(height * 0.02, 0),
-                Text(
-                  'Add new branch Manager Details here:',
-                  style: textTheme.bodyMedium,
-                ),
-                CommonFunctions.commonSpace(height * 0.04, 0),
-                Text('User Name', style: textTheme.bodyMedium),
-                CommonFunctions.commonSpace(height * 0.015, 0),
-                InputTextFieldSeller(
-                  controller: bmUserNameController,
-                  title: 'Enter User Name',
-                  textTheme: textTheme,
-                ),
-                CommonFunctions.commonSpace(height * 0.02, 0),
-                Text('Full Name', style: textTheme.bodyMedium),
-                CommonFunctions.commonSpace(height * 0.015, 0),
-                InputTextFieldSeller(
-                  controller: bmFullNameController,
-                  title: 'Enter Full Name',
-                  textTheme: textTheme,
-                ),
-                CommonFunctions.commonSpace(height * 0.02, 0),
-                Text('Branch ID', style: textTheme.bodyMedium),
-                CommonFunctions.commonSpace(height * 0.015, 0),
-                InputTextFieldSeller(
-                  controller: branchIDController,
-                  title: 'Enter Branch ID',
-                  textTheme: textTheme,
-                ),
-                CommonFunctions.commonSpace(height * 0.02, 0),
-                Text('Password', style: textTheme.bodyMedium),
-                CommonFunctions.commonSpace(height * 0.015, 0),
-                InputTextFieldSeller(
-                  controller: bmPasswordController,
-                  title: 'Enter Password',
-                  textTheme: textTheme,
-                ),
-                CommonFunctions.commonSpace(height * 0.04, 0),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(35),
-                    ),
-                    minimumSize: Size(width, height * 0.08),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CommonFunctions.commonSpace(height * 0.02, 0),
+                  Text(
+                    'Add branch Manager Details here:',
+                    style: textTheme.labelLarge,
                   ),
-                  onPressed: onPressed,
-                  child: addStoreBtnPressed
-                      ? CircularProgressIndicator(color: white)
-                      : Text(
-                    'Add BM',
-                    style: textTheme.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  CommonFunctions.commonSpace(height * 0.04, 0),
+                  Text('User Name', style: textTheme.bodySmall),
+                  CommonFunctions.commonSpace(height * 0.015, 0),
+                  InputTextFieldSeller(
+                    controller: bmUserNameController,
+                    title: 'Enter User Name',
+                    textTheme: textTheme,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter UserName';
+                        }
+                        return null;
+                      },
+                  ),
+                  CommonFunctions.commonSpace(height * 0.02, 0),
+                  Text('Full Name', style: textTheme.bodySmall),
+                  CommonFunctions.commonSpace(height * 0.015, 0),
+                  InputTextFieldSeller(
+                    controller: bmFullNameController,
+                    title: 'Enter Full Name',
+                    textTheme: textTheme,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter FullName';
+                      }
+                      return null;
+                    },
+                  ),
+                  CommonFunctions.commonSpace(height * 0.02, 0),
+                  Text('Branch ID', style: textTheme.bodySmall),
+                  CommonFunctions.commonSpace(height * 0.015, 0),
+                  InputTextFieldSeller(
+                    controller: branchIDController,
+                    title: 'Enter Branch ID',
+                    textTheme: textTheme,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter BranchID';
+                      }
+                      return null;
+                    },
+                  ),
+                  CommonFunctions.commonSpace(height * 0.02, 0),
+                  Text('Password', style: textTheme.bodySmall),
+                  CommonFunctions.commonSpace(height * 0.015, 0),
+                  InputTextFieldSeller(
+                    controller: bmPasswordController,
+                    title: 'Enter Password',
+                    textTheme: textTheme,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter Password';
+                      }
+                      return null;
+                    },
+                  ),
+                  CommonFunctions.commonSpace(height * 0.04, 0),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(35),
+                      ),
+                      minimumSize: Size(width, height * 0.08),
+                    ),
+                    onPressed: onPressed,
+                    child: addStoreBtnPressed
+                        ? CircularProgressIndicator(color: white)
+                        : Text(
+                      'Add BM',
+                      style: textTheme.bodyMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

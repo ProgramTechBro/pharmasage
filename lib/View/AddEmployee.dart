@@ -24,45 +24,56 @@ class _AddEmployeeState extends State<AddEmployee> {
   TextEditingController employeePositionController=TextEditingController();
   TextEditingController employeeSalaryController=TextEditingController();
   TextEditingController employeeBranchIdController=TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool addEmployeeButton=false;
   onPressed()async
   {
-    setState(() {
-      addEmployeeButton=true;
-    });
-    String name=employeeIDController.text;
-    final productImage = Provider.of<EmployeeProvider>(context,listen: false).employeeImage;
-    if (productImage != null && productImage.existsSync() && productImage.lengthSync() > 0) {
-      await EmployeeController.uploadEmployeeImageToFirebaseStorage(images: Provider.of<EmployeeProvider>(context,listen: false).employeeImage!, context: context,imageNAme: name);
-      String employeeImage=Provider
-          .of<EmployeeProvider>(context,listen: false).employeeImageUrL;
-      print('Emplayee Image Url $employeeImage');
-      Employees employees=Employees(
-        employeeID: employeeIDController.text,
-        employeeImageURL: employeeImage,
-        employeeName: employeeNameController.text,
-        employeeEmail: employeeEmailController.text,
-        employeeCNIC: employeeCNICController.text,
-        employeeContact: employeeContactController.text,
-        employeePosition: employeePositionController.text,
-        employeeSalary: employeeSalaryController.text,
-        employeeBranchID: employeeBranchIdController.text,
-
-      );
-      await EmployeeController.addEmployee(
-          context: context, employees: employees);
-      employeeIDController.clear();
-      employeeNameController.clear();
-      employeeEmailController.clear();
-      employeeCNICController.clear();
-      employeeContactController.clear();
-      employeePositionController.clear();
-      employeeSalaryController.clear();
-      employeeBranchIdController.clear();
+    if(_formKey.currentState!.validate()){
+      _formKey.currentState!.save();
       setState(() {
-        addEmployeeButton = false;
+        addEmployeeButton=true;
       });
+      String name=employeeIDController.text;
+      final productImage = Provider.of<EmployeeProvider>(context,listen: false).employeeImage;
+      if (productImage != null && productImage.existsSync() && productImage.lengthSync() > 0) {
+        await EmployeeController.uploadEmployeeImageToFirebaseStorage(images: Provider.of<EmployeeProvider>(context,listen: false).employeeImage!, context: context,imageNAme: name);
+        String employeeImage=Provider
+            .of<EmployeeProvider>(context,listen: false).employeeImageUrL;
+        print('Emplayee Image Url $employeeImage');
+        Employees employees=Employees(
+          employeeID: employeeIDController.text,
+          employeeImageURL: employeeImage,
+          employeeName: employeeNameController.text,
+          employeeEmail: employeeEmailController.text,
+          employeeCNIC: employeeCNICController.text,
+          employeeContact: employeeContactController.text,
+          employeePosition: employeePositionController.text,
+          employeeSalary: employeeSalaryController.text,
+          employeeBranchID: employeeBranchIdController.text,
+
+        );
+        await EmployeeController.addEmployee(
+            context: context, employees: employees);
+        employeeIDController.clear();
+        employeeNameController.clear();
+        employeeEmailController.clear();
+        employeeCNICController.clear();
+        employeeContactController.clear();
+        employeePositionController.clear();
+        employeeSalaryController.clear();
+        employeeBranchIdController.clear();
+        setState(() {
+          addEmployeeButton = false;
+        });
+      }
+      else{
+        CommonFunctions.showWarningToast(context: context, message: 'No Image');
+        setState(() {
+          addEmployeeButton=false;
+        });
+      }
     }
+
   }
   @override
   Widget build(BuildContext context) {
@@ -73,7 +84,7 @@ class _AddEmployeeState extends State<AddEmployee> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: primaryColor,
-            title:Text('Add Employee', style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
+            title:Text('Add Employee', style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
             centerTitle: true,
           ),
           body: SingleChildScrollView(
@@ -127,39 +138,96 @@ class _AddEmployeeState extends State<AddEmployee> {
                     },
                   ),
                   CommonFunctions.commonSpace(height*0.03,0 ),
-                  Text('Enter Employee Details here :',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.03,0 ),
-                  Text('Employee ID',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeIDController,title: 'Employee ID', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee Name',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeNameController,title: 'Employee Name', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee Email',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeEmailController,title: 'Employee Name', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee CNIC',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeCNICController,title: 'Employee CNIC', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee Contact',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeContactController,title: 'Employee Contact', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee Position',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeePositionController,title: 'Employee Position', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee Salary',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeSalaryController,title: 'Employee Salary', textTheme: textTheme),
-                  CommonFunctions.commonSpace(height*0.02, 0),
-                  Text('Employee BranchID',style: textTheme.bodyMedium),
-                  CommonFunctions.commonSpace(height*0.008, 0),
-                  InputTextFieldSeller( controller:employeeBranchIdController,title: 'Employee Branch ID', textTheme: textTheme),
+                  Form(
+                  key: _formKey,
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Enter Employee Details here :',style: textTheme.labelLarge),
+                      CommonFunctions.commonSpace(height*0.03,0 ),
+                      Text('Employee ID',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeIDController,title: 'Employee ID', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter ID';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee Name',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeNameController,title: 'Employee Name', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Name';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee Email',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeEmailController,title: 'Employee Email', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Email';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee CNIC',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeCNICController,title: 'Employee CNIC', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter CNIC';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee Contact',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeContactController,title: 'Employee Contact', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Contact';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee Position',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeePositionController,title: 'Employee Position', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Position';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee Salary',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeSalaryController,title: 'Employee Salary', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Salary';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.02, 0),
+                      Text('Employee BranchID',style: textTheme.bodySmall),
+                      CommonFunctions.commonSpace(height*0.008, 0),
+                      InputTextFieldSeller( controller:employeeBranchIdController,title: 'Employee Branch ID', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter BranchID';
+                          }
+                          return null;
+                        },),
+                    ],
+                  ),
+                  ),
                   CommonFunctions.commonSpace(height*0.04, 0),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(

@@ -22,40 +22,51 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController pNameController=TextEditingController();
   TextEditingController pComController=TextEditingController();
   TextEditingController pPriceController=TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool addProductBtnPressed=false;
   @override
   onPressed()async
   {
-    setState(() {
-      addProductBtnPressed=true;
-    });
-    String name=pidController.text;
-    final productImage = Provider.of<ProductProvider>(context,listen: false).productImage;
-    if (productImage != null && productImage.existsSync() && productImage.lengthSync() > 0) {
-      await OrderController.uploadImageToFirebaseStorage(images: Provider.of<ProductProvider>(context,listen: false).productImage!, context: context,imageNAme: name);
-     String productImage=Provider
-         .of<ProductProvider>(context,listen: false).imageUrL;
-      String sellerID = services.auth.currentUser!.email!;
-      Product productDetails=Product(
-        productSellerId: sellerID,
-        productImage: productImage,
-          productID: pidController.text,
-          productName: pNameController.text,
-        productCategory: dropDownValue,
-        productCompany: pComController.text,
-        productPrice: double.parse(pPriceController.text),
-        quantity: 1,
-      );
-      await OrderController.addProduct(
-          context: context, productModel: productDetails);
-      pidController.clear();
-      pNameController.clear();
-      pComController.clear();
-      pPriceController.clear();
-      setState(() {
-        addProductBtnPressed = false;
-      });
-    }
+     if(_formKey.currentState!.validate()){
+       _formKey.currentState!.save();
+       setState(() {
+         addProductBtnPressed=true;
+       });
+       String name=pidController.text;
+       final productImage = Provider.of<ProductProvider>(context,listen: false).productImage;
+       if (productImage != null && productImage.existsSync() && productImage.lengthSync() > 0) {
+         await OrderController.uploadImageToFirebaseStorage(images: Provider.of<ProductProvider>(context,listen: false).productImage!, context: context,imageNAme: name);
+         String productImage=Provider
+             .of<ProductProvider>(context,listen: false).imageUrL;
+         String sellerID = services.auth.currentUser!.email!;
+         Product productDetails=Product(
+           productSellerId: sellerID,
+           productImage: productImage,
+           productID: pidController.text,
+           productName: pNameController.text,
+           productCategory: dropDownValue,
+           productCompany: pComController.text,
+           productPrice: double.parse(pPriceController.text),
+           quantity: 1,
+         );
+         await OrderController.addProduct(
+             context: context, productModel: productDetails);
+         pidController.clear();
+         pNameController.clear();
+         pComController.clear();
+         pPriceController.clear();
+         setState(() {
+           addProductBtnPressed = false;
+         });
+       }
+       else{
+         CommonFunctions.showWarningToast(context: context, message: 'No Image');
+         setState(() {
+           addProductBtnPressed =false;
+         });
+       }
+     }
+
 
   }
   Widget build(BuildContext context) {
@@ -66,9 +77,8 @@ class _AddProductState extends State<AddProduct> {
       child: Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
-        title:Text('Add New Product', style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
+        title:Text('Add Product', style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
         centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
         body: SingleChildScrollView(
           child: Container(
@@ -97,7 +107,7 @@ class _AddProductState extends State<AddProduct> {
                               mainAxisAlignment:MainAxisAlignment.center,
                               children: [
                                 Icon(Icons.add,size: height*0.07,color: greyShade3,),
-                                Text('Add product',style: textTheme.displayMedium!.copyWith(color: greyShade3),)
+                                Text('Add Image',style: textTheme.displayMedium!.copyWith(color: greyShade3),)
                               ],
                             ),
                           ),
@@ -121,23 +131,56 @@ class _AddProductState extends State<AddProduct> {
                   },
                 ),
                 CommonFunctions.commonSpace(height*0.03, 0),
-                Text('Enter Product ID',style: textTheme.bodyMedium,),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                InputTextFieldSeller( controller:pidController,title: 'Product ID', textTheme: textTheme),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                Text('Enter Product Name',style: textTheme.bodyMedium,),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                InputTextFieldSeller( controller:pNameController,title: 'Product Name', textTheme: textTheme),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                productCategoryDropdown(textTheme, height, width),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                Text('Enter Company Name',style: textTheme.bodyMedium,),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                InputTextFieldSeller( controller:pComController,title: 'Brand Name', textTheme: textTheme),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                Text('Enter Product Price ',style: textTheme.bodyMedium,),
-                CommonFunctions.commonSpace(height*0.01, 0),
-                InputTextFieldSeller( controller:pPriceController,title: 'Brand Name', textTheme: textTheme),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Enter Product ID',style: textTheme.bodySmall,),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      InputTextFieldSeller( controller:pidController,title: 'Product ID', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter ID';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      Text('Enter Product Name',style: textTheme.bodySmall,),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      InputTextFieldSeller( controller:pNameController,title: 'Product Name', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter Name';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      productCategoryDropdown(textTheme, height, width),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      Text('Enter Company Name',style: textTheme.bodySmall,),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      InputTextFieldSeller( controller:pComController,title: 'Brand Name', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter CompName';
+                          }
+                          return null;
+                        },),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      Text('Enter Product Price ',style: textTheme.bodySmall,),
+                      CommonFunctions.commonSpace(height*0.01, 0),
+                      InputTextFieldSeller( controller:pPriceController,title: 'Brand Name', textTheme: textTheme,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter CompanyName';
+                          }
+                          return null;
+                        },),
+                    ],
+                  ),
+                ),
                 CommonFunctions.commonSpace(height*0.04, 0),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -168,7 +211,7 @@ class _AddProductState extends State<AddProduct> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Product Category',style: textTheme.bodyMedium,),
+        Text('Product Category',style: textTheme.bodySmall,),
         CommonFunctions.commonSpace(height*0.01, 0),
         Container(
           height: height*0.085,

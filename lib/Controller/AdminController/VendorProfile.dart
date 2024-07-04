@@ -219,7 +219,7 @@ class UserController{
         //String Role=Provider.of<AdminProvider>(context,listen: false).role;
         await services.createNewBM(context: context, details: data);
       }
-      await auth.signInWithEmailAndPassword(email: email!  , password: uid);
+      //await auth.signInWithEmailAndPassword(email: email!  , password: uid);
     }catch(e)
     {
       log(e.toString());

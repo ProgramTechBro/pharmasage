@@ -1,19 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../colors.dart';
 class InputTextFieldSeller extends StatelessWidget {
   const InputTextFieldSeller({
-    super.key,
+    Key? key,
     required this.controller,
     required this.title,
     required this.textTheme,
-    this.suffixIcon
-  });
+    this.suffixIcon,
+    this.validator, // Add validator parameter
+  }) : super(key: key);
 
   final TextEditingController controller;
   final String title;
   final TextTheme textTheme;
   final Widget? suffixIcon;
+  final String? Function(String?)? validator; // Validator function
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +45,9 @@ class InputTextFieldSeller extends StatelessWidget {
           borderSide: BorderSide(color: Colors.grey),
         ),
         suffixIcon: suffixIcon,
+        // Show error text based on validator
       ),
-
+      validator: validator,
     );
   }
 }

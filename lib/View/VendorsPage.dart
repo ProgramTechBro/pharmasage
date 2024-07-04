@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pharmasage/View/AdminProducts.dart';
 import 'package:pharmasage/View/BMProducts.dart';
@@ -22,7 +21,6 @@ class _VendorPageState extends State<VendorPage> {
   List<DocumentSnapshot> users = [];
   List<DocumentSnapshot> filteredUsers = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -36,6 +34,7 @@ class _VendorPageState extends State<VendorPage> {
       filteredUsers = users;
     });
   }
+
   void filterUsers(String keyword) {
     setState(() {
       filteredUsers = users.where((user) {
@@ -52,6 +51,7 @@ class _VendorPageState extends State<VendorPage> {
     final width = MediaQuery.of(context).size.width;
     final textTheme = Theme.of(context).textTheme;
     final roletogo = Provider.of<AdminProvider>(context, listen: false).role;
+
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -63,7 +63,7 @@ class _VendorPageState extends State<VendorPage> {
               children: [
                 TextField(
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.search, color: grey), // Set prefix icon color to grey
+                    prefixIcon: Icon(Icons.search, color: grey),
                     hintText: 'Search by name',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -73,56 +73,48 @@ class _VendorPageState extends State<VendorPage> {
                       borderSide: BorderSide(color: grey),
                     ),
                   ),
-                  cursorColor: grey, // Set cursor color to grey
+                  cursorColor: grey,
                   onChanged: (value) {
                     filterUsers(value);
-                    print(value);
                   },
                 ),
                 CommonFunctions.commonSpace(height * 0.03, 0),
                 Container(
                   height: height * 0.8,
-                  child: users.isEmpty
+                  child: filteredUsers.isEmpty
                       ? Center(child: CircularProgressIndicator(color: primaryColor,))
                       : ListView.separated(
-                    itemCount: users.length,
+                    itemCount: filteredUsers.length,
                     scrollDirection: Axis.vertical,
                     separatorBuilder: (BuildContext context, int index) {
                       return SizedBox(height: height * 0.002);
                     },
                     itemBuilder: (context, index) {
-                      final userData = users[index].data() as Map<String, dynamic>;
+                      final userData = filteredUsers[index].data() as Map<String, dynamic>;
                       final role = userData['role'];
-                     print('role $role');
+
                       if (role == 'Vendor') {
                         final fullName = userData['fullName'];
                         final username = userData['userName'];
-                        final email=userData['email'];
-                        final contact=userData['contact'];
-                        final image=userData['imagesURL'];
+                        final email = userData['email'];
+                        final contact = userData['contact'];
+                        final image = userData['imagesURL'];
 
                         return GestureDetector(
-                          onTap: (){
-                            print('something');
-                           if(roletogo=='Pharmacist')
-                             {
-                               Navigator.push(
-                                 context,
-                                 MaterialPageRoute(builder: (context) => AdminProducts(currentVendor: userData,)),
-                               );
-                             }
-                           else if(roletogo=='Branch Manager')
-                             {
-                               print(email);
-                               if (email != null) {
-                                 Navigator.push(
-                                   context,
-                                   MaterialPageRoute(builder: (context) => BranchManagerProducts(currentVendor: userData)),
-                                 );
-                               } else {
-                                 // Handle the case where email is null
-                               }
-                             }
+                          onTap: () {
+                            if (roletogo == 'Pharmacist') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => AdminProducts(currentVendor: userData)),
+                              );
+                            } else if (roletogo == 'Branch Manager') {
+                              if (email != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => BranchManagerProducts(currentVendor: userData)),
+                                );
+                              }
+                            }
                           },
                           child: Card(
                             color: grey,
@@ -160,7 +152,6 @@ class _VendorPageState extends State<VendorPage> {
                                           : AssetImage('assets/images/farmer.png') as ImageProvider<Object>?,
                                     ),
                                     title: Text(username, style: textTheme.labelMedium),
-                                    //CommonFunctions.commonSpace(height * 0.01, 0),
                                     subtitle: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -177,7 +168,6 @@ class _VendorPageState extends State<VendorPage> {
                           ),
                         );
                       } else {
-                        // Return an empty container if the user is not a vendor
                         return Container();
                       }
                     },

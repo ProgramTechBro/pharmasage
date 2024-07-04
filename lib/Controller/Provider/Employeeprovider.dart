@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,10 +11,23 @@ class EmployeeProvider extends ChangeNotifier{
   File? employeeImage;
   String employeeImageUrL='';
   String updateEmployeeImageUrL='';
-  //bool employeeSaving=false;
+  File? updatedEmployeeImage;
+  bool updateSaving=false;
   fetchEmployeeImagesFromGallery({required BuildContext context}) async {
     employeeImage = await controller.pickImage(context);
-    //updateProductImagesURL(imagesURLs: productImage!.path);
+    notifyListeners();
+  }
+  fetchUpdatedEmployeeImageFromGallery({required BuildContext context})async{
+    updatedEmployeeImage = await controller.pickImage(context);
+    notifyListeners();
+  }
+  updatedUpdatedEmployeeImageURL({required String imagesURLs}){
+    updateEmployeeImageUrL=imagesURLs;
+    notifyListeners();
+  }
+  emptyUpdatedEmployeeImagesURL(){
+    updatedEmployeeImage=null;
+    updateEmployeeImageUrL='';
     notifyListeners();
   }
   updateEmployeeImagesURL({required String imagesURLs}) async {
@@ -25,10 +39,12 @@ class EmployeeProvider extends ChangeNotifier{
     employeeImageUrL='';
     notifyListeners();
   }
-  // setStoreSaving()
-  // {
-  //   employeeSaving=!employeeSaving;
-  //   notifyListeners();
-  // }
-
+  updateEmployeeUpdateSaving(){
+    updateSaving=!updateSaving;
+    notifyListeners();
+  }
+  removeUpdatedEmployeeImage(){
+    updatedEmployeeImage=null;
+    notifyListeners();
+  }
 }

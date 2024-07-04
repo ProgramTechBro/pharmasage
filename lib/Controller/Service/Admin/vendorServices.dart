@@ -129,18 +129,6 @@ class UserHandler {
       throw error;
     }
   }
-  // getVendorData(BuildContext context)
-  // {
-  //   final email=auth.currentUser!.email;
-  //   if(email!=null)
-  //     {
-  //       return profile.getvendorinfo(email);
-  //     }
-  //   else
-  //     {
-  //       CommonFunctions.showWarningToast(context: context, message: 'Login to Continue');
-  //     }
-  // }
   Future<void> forgetPassword(BuildContext context,String email)async{
     auth.sendPasswordResetEmail(email: email).then((value) async {
       CommonFunctions.showSuccessToast(context: context, message: 'Email Sent');
@@ -177,6 +165,22 @@ class UserHandler {
       print("Failed to update role: $error");
       // You can throw the error here to handle it in the calling code if needed
       throw error;
+    }
+  }
+  Future<Map<String, dynamic>> getBMData(String username) async {
+    try {
+      DocumentSnapshot employeeSnapshot =
+      await FirebaseFirestore.instance.collection('Users').doc(username).get();
+
+      if (employeeSnapshot.exists) {
+        Map<String, dynamic> bmData = employeeSnapshot.data() as Map<String, dynamic>;
+        return bmData;
+      } else {
+        throw Exception('Branch Manager Not Found');
+      }
+    } catch (e) {
+      print('Error fetching BranchManager data: $e');
+      throw Exception('Failed to fetch BranchManager data');
     }
   }
 }

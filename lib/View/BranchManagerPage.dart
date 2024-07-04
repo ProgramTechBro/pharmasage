@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pharmasage/View/AddBranchManager.dart';
 import '../Constants/CommonFunctions.dart';
 import '../Utils/colors.dart';
+import '../Utils/widgets/popMenuBranchManager.dart';
 
 CommonFunctions common = CommonFunctions();
 
@@ -42,11 +43,9 @@ class _BranchManagerState extends State<BranchManager> {
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(color: primaryColor,));
             }
-
             final List<DocumentSnapshot> users = snapshot.data!.docs;
-
             return SingleChildScrollView(
               child: Container(
                 width: width,
@@ -87,12 +86,22 @@ class _BranchManagerState extends State<BranchManager> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          fullName,
-                                          style: textTheme.displaySmall!.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+                                        Expanded(
+                                          child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                fullName,
+                                                style: textTheme.displaySmall!.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                        ),
+                                        PopMenuBranchManagerProfile(bmUsername:username,),
                                       ],
-                                    ),
+                                    )
                                   ),
                                   SizedBox(height: height * 0.01),
                                   Container(
@@ -117,7 +126,7 @@ class _BranchManagerState extends State<BranchManager> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                
+                                                common.showDeleteBranchManagerDialog(context,'Delete BranchManager','Are you Sure you want to delete this BranchManager?',username);
                                               },
                                               child: Container(
                                                 height: height * 0.07,

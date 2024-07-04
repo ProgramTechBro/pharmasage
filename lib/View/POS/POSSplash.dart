@@ -35,6 +35,7 @@ class _POSSplashState extends State<POSSplash> {
                  Image.asset('assets/images/B1.png'),
                  //CommonFunctions.commonSpace(0, width * 0.002),
                  Image.asset('assets/images/B2.png'),
+                 // Image.asset('assets/images/pharma.jpg')
                ],
              ),
            ),
