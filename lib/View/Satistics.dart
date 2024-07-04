@@ -49,10 +49,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   populateMonthNames() {
     final now = DateTime.now();
     final previousMonth = DateTime(now.year, now.month - 1, 1);
-    monthNames.add(DateFormat('MMM').format(previousMonth));
-
-    // Add current month (June)
-    monthNames.add(DateFormat('MMM').format(now));
+    monthNames.add(DateFormat('MMM').format(previousMonth)); // Add previous month first
+    monthNames.add(DateFormat('MMM').format(now)); // Add current month next
   }
   Future<void> fetchData() async {
     try {
@@ -135,7 +133,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
   Future<void> fetchTransactionData() async {
-    // Fetching all transactions
     final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('Transactions')
         .doc(widget.storeId)
@@ -144,17 +141,27 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
     transactions = querySnapshot.docs.map((doc) => TransactionModel.fromSnapshot(doc)).toList();
     print(transactions);
-    calculateMonthlySale(); // Call calculateMonthlyCategorySale after fetching data
+    calculateMonthlySale();
   }
+
   void calculateMonthlySale() {
     final now = DateTime.now();
     final List<int> months = [];
+    monthNames.clear(); // Clear previous month names
+
     for (int i = 0; i < 2; i++) {
       final date = DateTime(now.year, now.month - i, 1);
       months.add(date.month);
+      monthNames.insert(0, DateFormat('MMM').format(date)); // Insert month name at the beginning
     }
 
-    monthlyData = months.map((month) {
+    monthlyData = months.reversed.map((month) {
+      // Reset sales data for each month
+      double medicineSale = 0.0;
+      double cosmeticsSale = 0.0;
+      double babyCareSale = 0.0;
+      double petCareSale = 0.0;
+
       final monthlyTransactions = transactions.where((transaction) {
         final transactionDateParts = transaction.transactionDate!.split(' ');
         final transactionMonth = DateFormat.MMM().parse(transactionDateParts[1]).month;
@@ -176,6 +183,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           }
         }
       }
+
       return MonthlyCategorySale(
         month: DateFormat('MMM').format(DateTime(DateTime.now().year, month)),
         medicineSale: medicineSale,
@@ -185,7 +193,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
       );
     }).toList();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -556,35 +563,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     );
                                   },
                                 ),
-                                // barTouchData: BarTouchData(
-                                //   enabled: true,
-                                //   touchTooltipData: BarTouchTooltipData(
-                                //     tooltipBgColor: primaryColor,
-                                //     getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                                //       String category;
-                                //       switch (rodIndex) {
-                                //         case 0:
-                                //           category = 'Medicine';
-                                //           break;
-                                //         case 1:
-                                //           category = 'Cosmetics';
-                                //           break;
-                                //         case 2:
-                                //           category = 'Baby Care';
-                                //           break;
-                                //         case 3:
-                                //           category = 'Pet Care';
-                                //           break;
-                                //         default:
-                                //           category = '';
-                                //       }
-                                //       return BarTooltipItem(
-                                //         category,
-                                //         TextStyle(color: Colors.white,fontSize: 10),
-                                //       );
-                                //     },
-                                //   ),
-                                // ),
                               ),
                             ),
                           ),

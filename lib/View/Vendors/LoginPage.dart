@@ -95,12 +95,6 @@ class _LoginPageState extends State<LoginPage> {
                           if (value!.isEmpty) {
                             return 'Please enter your Email';
                           }
-                          if (!value.contains('@')) {
-                            return 'Please enter valid email';
-                          }
-                          if(!value.contains('.com')){
-                            return 'Please enter Invalid email';
-                          }
                           return null;
                         },
                       ),
@@ -147,22 +141,6 @@ class _LoginPageState extends State<LoginPage> {
                           if (value!.isEmpty) {
                             return 'Please enter your password';
                           }
-                          // if(!value.contains(RegExp(r'\d')) && !value.contains(RegExp(r'[A-Z]')) && value.length < 8 && !value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')))
-                          //   {
-                          //     return 'Password must be Strong';
-                          //   }
-                          // if (!value.contains(RegExp(r'\d'))) {
-                          //   return 'Password must contain a number';
-                          // }
-                          // if (!value.contains(RegExp(r'[A-Z]'))) {
-                          //   return 'Password must contain a capital letter';
-                          // }
-                          // if (value.length < 8) {
-                          //   return 'Password must be more than 8 characters';
-                          // }
-                          // if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-                          //   return 'Password must contain a special character';
-                          // }
                            return null;
                         },
                       ),

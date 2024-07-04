@@ -37,7 +37,6 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
         .doc(widget.branchID)
         .collection('Products')
         .get();
-    print(querySnapshot);
     return querySnapshot.docs;
   }
 
@@ -54,7 +53,7 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
             width: width,
             padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.02),
             child: FutureBuilder(
-              //Fetching Products from Firebase
+              // Fetching Products from Firebase
               future: _fetchProducts,
               builder: (context, AsyncSnapshot<List<QueryDocumentSnapshot>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,20 +61,27 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  //Adding all Products into list
+                  // Adding all Products into list
                   final List<QueryDocumentSnapshot> productsData = snapshot.data ?? [];
+                  if (productsData.isEmpty) {
+                    return Center(
+                      child: Text('No expiry data for this store',style: textTheme.labelLarge,),
+                    );
+                  }
+
                   DateTime now = DateTime.now();
                   DateTime oneWeekLater = now.add(const Duration(days: 7));
                   DateTime oneMonthLater = now.add(const Duration(days: 30));
                   DateTime oneYearLater = now.add(const Duration(days: 365));
+
                   for (QueryDocumentSnapshot productSnapshot in productsData) {
-                    //Checking when they will expire(Within Week,Month,Year)
                     InventoryProduct product = InventoryProduct.fromMap(productSnapshot.data() as Map<String, dynamic>);
                     String dateString = product.productExpiry!;
                     DateTime expiryDate = DateFormat('dd MMM, yyyy').parse(dateString);
+
                     if (expiryDate.isBefore(oneWeekLater)) {
-                      withinWeek++;                    //Set value of no.of Product will expire within week
-                      withinWeekProducts.add(product); //adding them to list of Within a week
+                      withinWeek++;
+                      withinWeekProducts.add(product);
                     } else if (expiryDate.isBefore(oneMonthLater)) {
                       withinMonth++;
                       withinMonthProducts.add(product);
@@ -89,10 +95,15 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ExpiryReportDetails(products: withinWeekProducts,storeId: widget.branchID,)),
+                            MaterialPageRoute(
+                              builder: (context) => ExpiryReportDetails(
+                                products: withinWeekProducts,
+                                storeId: widget.branchID,
+                              ),
+                            ),
                           );
                         },
                         child: Container(
@@ -112,10 +123,18 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                                   Container(
                                     height: height * 0.05,
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
                                       color: primaryColor,
                                     ),
-                                    child: Center(child: Text('Within a Week', style: textTheme.labelLarge!.copyWith(color: Colors.white))),
+                                    child: Center(
+                                      child: Text(
+                                        'Within a Week',
+                                        style: textTheme.labelLarge!.copyWith(color: Colors.white),
+                                      ),
+                                    ),
                                   ),
                                   CommonFunctions.commonSpace(height * 0.04, 0),
                                   Center(
@@ -153,12 +172,17 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                           ),
                         ),
                       ),
-                      CommonFunctions.commonSpace(height*0.01,0),
+                      CommonFunctions.commonSpace(height * 0.01, 0),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ExpiryReportDetails(products: withinMonthProducts,storeId: widget.branchID,)),
+                            MaterialPageRoute(
+                              builder: (context) => ExpiryReportDetails(
+                                products: withinMonthProducts,
+                                storeId: widget.branchID,
+                              ),
+                            ),
                           );
                         },
                         child: Container(
@@ -178,10 +202,18 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                                   Container(
                                     height: height * 0.05,
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
                                       color: primaryColor,
                                     ),
-                                    child: Center(child: Text('Within a Month', style: textTheme.labelLarge!.copyWith(color: Colors.white))),
+                                    child: Center(
+                                      child: Text(
+                                        'Within a Month',
+                                        style: textTheme.labelLarge!.copyWith(color: Colors.white),
+                                      ),
+                                    ),
                                   ),
                                   CommonFunctions.commonSpace(height * 0.04, 0),
                                   Center(
@@ -219,12 +251,17 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                           ),
                         ),
                       ),
-                      CommonFunctions.commonSpace(height*0.01,0),
+                      CommonFunctions.commonSpace(height * 0.01, 0),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ExpiryReportDetails(products: withinYearProducts,storeId: widget.branchID,)),
+                            MaterialPageRoute(
+                              builder: (context) => ExpiryReportDetails(
+                                products: withinYearProducts,
+                                storeId: widget.branchID,
+                              ),
+                            ),
                           );
                         },
                         child: Container(
@@ -244,10 +281,18 @@ class _ExpiryReportPageState extends State<ExpiryReportPage> {
                                   Container(
                                     height: height * 0.05,
                                     decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20),
+                                      ),
                                       color: primaryColor,
                                     ),
-                                    child: Center(child: Text('Within a Year', style: textTheme.labelLarge!.copyWith(color: Colors.white))),
+                                    child: Center(
+                                      child: Text(
+                                        'Within a Year',
+                                        style: textTheme.labelLarge!.copyWith(color: Colors.white),
+                                      ),
+                                    ),
                                   ),
                                   CommonFunctions.commonSpace(height * 0.04, 0),
                                   Center(

@@ -55,7 +55,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                     Scaffold.of(context).openDrawer();
                   },
                 ),
-                title:Text(appBarTitle, style: textTheme.displaySmall!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
+                title:Text(appBarTitle, style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w500,color: Colors.white)),
                 centerTitle: true,
                 actions: [
                   InkWell(

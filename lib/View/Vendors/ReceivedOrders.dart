@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pharmasage/Utils/colors.dart';
 import 'package:provider/provider.dart';
-
 import '../../Constants/CommonFunctions.dart';
+import '../../Utils/colors.dart';
 import '../vendorOrderDetails.dart';
 
 class ReceivedOrders extends StatefulWidget {
@@ -16,6 +14,28 @@ class ReceivedOrders extends StatefulWidget {
 }
 
 class _ReceivedOrdersState extends State<ReceivedOrders> {
+  Future<List<Map<String, dynamic>>> fetchOrdersAndStores() async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final QuerySnapshot orderSnapshot = await FirebaseFirestore.instance
+        .collection('ReceivedOrders')
+        .where('vendorEmail', isEqualTo: auth.currentUser!.email)
+        .get();
+
+    final List<DocumentSnapshot> orders = orderSnapshot.docs;
+    final List<Map<String, dynamic>> ordersWithStoreData = [];
+
+    for (var order in orders) {
+      final orderData = order.data() as Map<String, dynamic>;
+      final storeData = await fetchStoreData(orderData['storeId']);
+      ordersWithStoreData.add({
+        'order': orderData,
+        'store': storeData,
+      });
+    }
+
+    return ordersWithStoreData;
+  }
+
   Future<Map<String, dynamic>> fetchStoreData(String storeId) async {
     try {
       final DocumentSnapshot storeSnapshot = await FirebaseFirestore.instance
@@ -33,148 +53,127 @@ class _ReceivedOrdersState extends State<ReceivedOrders> {
       throw Exception('Error fetching store data: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final textTheme = Theme.of(context).textTheme;
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    final Stream<QuerySnapshot> orderStream = FirebaseFirestore.instance
-        .collection('ReceivedOrders')
-        .snapshots();
 
-    return  Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: orderStream,
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
+    return Scaffold(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: fetchOrdersAndStores(),
+        builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator(color: primaryColor));
           }
 
-          final List<DocumentSnapshot> orders = snapshot.data!.docs;
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-          // Filter orders based on vendorEmail
-          final List<DocumentSnapshot> filteredOrders = orders.where((order) {
-            final vendorEmail = order['vendorEmail'];
-            return vendorEmail == auth.currentUser!.email;
-          }).toList();
+          final List<Map<String, dynamic>> ordersWithStoreData = snapshot.data!;
+
+          if (ordersWithStoreData.isEmpty) {
+            return Center(child: Text('No orders Received',style: textTheme.labelLarge,));
+          }
 
           return ListView.builder(
-            itemCount: filteredOrders.length,
-            itemBuilder: (context, index)  {
-              final orderData = filteredOrders[index].data() as Map<String, dynamic>;
+            itemCount: ordersWithStoreData.length,
+            itemBuilder: (context, index) {
+              final orderData = ordersWithStoreData[index]['order'];
+              final storeData = ordersWithStoreData[index]['store'];
 
-              return FutureBuilder<Map<String, dynamic>>(
-                future: fetchStoreData(orderData['storeId']),
-                builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> storeSnapshot) {
-                  if (storeSnapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator(color: primaryColor));
-                  }
-
-                  if (storeSnapshot.hasError) {
-                    return Center(child: Text('Error: ${storeSnapshot.error}'));
-                  }
-
-                  final store = storeSnapshot.data!;
-
-                  return InkWell(
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OrderDetailsPage(orderData: orderData,store: store,),
-                        ),
-                      );
-                    },
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderDetailsPage(orderData: orderData, store: storeData),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.02),
+                  child: Card(
+                    color: grey,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: width * 0.03, vertical: height * 0.02),
-                      child: Card(
-                        color: grey,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        ),
-                        child: Container(
-                          height: height*0.3,
-                          //padding: EdgeInsets.symmetric(horizontal: width * 0.06, vertical: height * 0.02),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: height * 0.05,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(20),topRight: Radius.circular(20)),
-                                  color: primaryColor,
-                                ),
-                                child: Center(
-                                  child: RichText(
-                                    text: TextSpan(children: [
-                                      TextSpan(text: 'Status : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500,color: white)),
-                                      TextSpan(text: orderData['orderStatus'], style: textTheme.bodySmall!.copyWith(color: white),),
-                                    ]),
-                                  ),
-                                ),
+                      height: height * 0.3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: height * 0.05,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                              color: primaryColor,
+                            ),
+                            child: Center(
+                              child: RichText(
+                                text: TextSpan(children: [
+                                  TextSpan(text: 'Status : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500, color: Colors.white)),
+                                  TextSpan(text: orderData['orderStatus'], style: textTheme.bodySmall!.copyWith(color: Colors.white)),
+                                ]),
                               ),
-                              CommonFunctions.commonSpace(height * 0.01, 0),
-                              Container(
-                                padding: EdgeInsets.symmetric(vertical: height*0.02,horizontal:width*0.04),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          ),
+                          CommonFunctions.commonSpace(height * 0.01, 0),
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: height * 0.02, horizontal: width * 0.04),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(text: 'Order ID : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                            TextSpan(text: orderData['orderID'], style: textTheme.bodySmall),
-                                          ]),
-                                        ),
-                                        CommonFunctions.commonSpace(height*0.01,0),
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(text: 'order Time : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                            TextSpan(text: orderData['orderTime'], style: textTheme.bodySmall),
-                                          ]),
-                                        ),
-                                      ],
-                                    ),
-                                    CommonFunctions.commonSpace(height*0.01,0),
                                     RichText(
                                       text: TextSpan(children: [
-                                        TextSpan(text: 'Order Date : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                        TextSpan(text: orderData['orderDate'], style: textTheme.bodySmall),
+                                        TextSpan(text: 'Order ID : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
+                                        TextSpan(text: orderData['orderID'], style: textTheme.bodySmall),
                                       ]),
                                     ),
-                                    Center(child: const Text('- - - - - - - - - - - - - - - - - - - -',style: TextStyle(fontSize: 20),)),
-                                    CommonFunctions.commonSpace(height*0.01,0),
+                                    CommonFunctions.commonSpace(height * 0.01, 0),
                                     RichText(
                                       text: TextSpan(children: [
-                                        TextSpan(text: 'Branch Name : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                        TextSpan(text: store['branchName'], style: textTheme.bodySmall),
-                                      ]),
-                                    ),
-                                    CommonFunctions.commonSpace(height*0.02,0),
-                                    RichText(
-                                      text: TextSpan(children: [
-                                        TextSpan(text: 'Branch Location : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                        TextSpan(text: store['branchLocation'], style: textTheme.bodySmall),
+                                        TextSpan(text: 'Order Time : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
+                                        TextSpan(text: orderData['orderTime'], style: textTheme.bodySmall),
                                       ]),
                                     ),
                                   ],
                                 ),
-
-                              ),
-                            ],
+                                CommonFunctions.commonSpace(height * 0.01, 0),
+                                RichText(
+                                  text: TextSpan(children: [
+                                    TextSpan(text: 'Order Date : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
+                                    TextSpan(text: orderData['orderDate'], style: textTheme.bodySmall),
+                                  ]),
+                                ),
+                                Center(child: const Text('- - - - - - - - - - - - - - - - - - - -', style: TextStyle(fontSize: 20))),
+                                CommonFunctions.commonSpace(height * 0.01, 0),
+                                RichText(
+                                  text: TextSpan(children: [
+                                    TextSpan(text: 'Branch Name : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
+                                    TextSpan(text: storeData['branchName'], style: textTheme.bodySmall),
+                                  ]),
+                                ),
+                                CommonFunctions.commonSpace(height * 0.02, 0),
+                                RichText(
+                                  text: TextSpan(children: [
+                                    TextSpan(text: 'Branch Location : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
+                                    TextSpan(text: storeData['branchLocation'], style: textTheme.bodySmall),
+                                  ]),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                  );
-                },
+                  ),
+                ),
               );
             },
           );
@@ -183,4 +182,3 @@ class _ReceivedOrdersState extends State<ReceivedOrders> {
     );
   }
 }
-

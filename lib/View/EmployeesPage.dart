@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pharmasage/Utils/colors.dart';
-import 'package:pharmasage/Utils/widgets/PopMenuEmployee.dart';
-import 'package:pharmasage/View/AddEmployee.dart';
 import 'package:provider/provider.dart';
+import 'package:pharmasage/Utils/colors.dart';
+import 'package:pharmasage/View/AddEmployee.dart';
 import '../Constants/CommonFunctions.dart';
 import '../Controller/Provider/Authprovider.dart';
+import '../Utils/widgets/PopMenuEmployee.dart';
 import 'EmployeeDetails.dart';
 
 class EmployeePage extends StatefulWidget {
@@ -23,7 +23,6 @@ class _EmployeePageState extends State<EmployeePage> {
   @override
   void initState() {
     super.initState();
-    print('Here I am in initState');
     fetchEmployees();
   }
 
@@ -38,6 +37,7 @@ class _EmployeePageState extends State<EmployeePage> {
   @override
   Widget build(BuildContext context) {
     final role = Provider.of<AdminProvider>(context, listen: false).role;
+
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: employeeStream,
@@ -55,9 +55,15 @@ class _EmployeePageState extends State<EmployeePage> {
           final height = MediaQuery.of(context).size.height;
           final textTheme = Theme.of(context).textTheme;
 
+          if (employees.isEmpty) {
+            return Center(
+              child: Text('No employees exist for this store',style: textTheme.labelLarge,),
+            );
+          }
+
           return Container(
             height: height,
-            padding: EdgeInsets.symmetric(vertical:20,horizontal: 10),
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: ListView.separated(
               itemCount: employees.length,
               scrollDirection: Axis.vertical,
@@ -68,7 +74,7 @@ class _EmployeePageState extends State<EmployeePage> {
                 final employeeData = employees[index].data() as Map<String, dynamic>;
 
                 return GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -89,7 +95,10 @@ class _EmployeePageState extends State<EmployeePage> {
                           Container(
                             height: height * 0.06,
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
                               color: primaryColor,
                             ),
                             child: Row(
@@ -103,13 +112,16 @@ class _EmployeePageState extends State<EmployeePage> {
                                         child: Text(
                                           employeeData['employeeName'],
                                           textAlign: TextAlign.center,
-                                          style: textTheme.bodySmall!.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+                                          style: textTheme.bodySmall!.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                YourEmployeeWidget(employeeData: employeeData,),
+                                YourEmployeeWidget(employeeData: employeeData),
                               ],
                             ),
                           ),
@@ -145,7 +157,7 @@ class _EmployeePageState extends State<EmployeePage> {
           );
         },
       ),
-      floatingActionButton: role == 'Branch Manager' // Use role variable here
+      floatingActionButton: role == 'Branch Manager'
           ? FloatingActionButton(
         backgroundColor: primaryColor,
         child: Icon(Icons.add, size: 35),
@@ -155,9 +167,11 @@ class _EmployeePageState extends State<EmployeePage> {
             MaterialPageRoute(builder: (context) => const AddEmployee()),
           );
         },
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+        ),
       )
-          : null, // If role is not 'Branch Manager', return null
+          : null,
     );
   }
 }

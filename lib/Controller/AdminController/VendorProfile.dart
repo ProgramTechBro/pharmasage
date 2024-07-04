@@ -66,21 +66,21 @@ class UserController{
           print('By');
           //await Future.delayed(const Duration(seconds: 2));
           final role = await Provider.of<AdminProvider>(context,listen: false).loadUserDataIntoMemory();
-          print('Hy');
+          //print('Hy');
           // final role = Provider.of<AdminProvider>(context, listen:false).role;
           print(role);
           if(role=='Pharmacist')
             {
-              print('chalo g pharmacist');
+              //print('chalo g pharmacist');
               Navigator.pushReplacement(context, PageTransition(child: Dashboard(), type: PageTransitionType.rightToLeft));
             }
           else if(role=='Vendor')
             {
-              print('chalo g Vendor');
+              //print('chalo g Vendor');
               Navigator.pushReplacement(context, PageTransition(child: VendorDashboard(), type: PageTransitionType.rightToLeft));
             }
           else{
-            print('branch manager');
+            //print('branch manager');
             Branchid=Provider.of<AdminProvider>(context,listen: false).bm.branchID!;
             print(Branchid);
             Provider.of<AdminProvider>(context,listen: false).updateCurrentBranch(Branchid);

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../Controller/Service/ReturnInvoicepdf.dart';
 import '../Controller/Service/ReturnpdfApi.dart';
 import '../Model/ReturnInvoice/ReturnInvoice.dart';
@@ -51,37 +50,39 @@ class _ReturnPageState extends State<ReturnPage> {
 
           final List<DocumentSnapshot> returnedTransactions = snapshot.data!.docs;
 
+          if (returnedTransactions.isEmpty) {
+            return Center(child: Text('No returns data for this store',style: textTheme.labelLarge,));
+          }
+
           // Filter orders based on vendorEmail
           final List<DocumentSnapshot> filteredOrders = returnedTransactions.where((returned) {
             returnId = returned['returnID'];
-            returnDate=returned['returnDate'];
-            returnTime=returned['returnTime'];
-            againstInvoice=returned['returnAgainst'];
-            //print('hooo $againstInvoice');
+            returnDate = returned['returnDate'];
+            returnTime = returned['returnTime'];
+            againstInvoice = returned['returnAgainst'];
             totalAmount = (returned['totalAmount'] as int).toDouble();
-            storeName=returned['storeName'];
-            storeLocation=returned['storeLocation'];
-            comment=returned['comment'];
+            storeName = returned['storeName'];
+            storeLocation = returned['storeLocation'];
+            comment = returned['comment'];
             return true;
           }).toList();
+
           return ListView.builder(
             itemCount: filteredOrders.length,
             itemBuilder: (context, index) {
               final orderData = filteredOrders[index].data() as Map<String, dynamic>;
-              print(orderData['againstInvoice']);
 
               return InkWell(
                 onTap: () async {
                   final productData = orderData['selectedProducts'];
-                  print(productData);
                   final List<ReturnInvoiceItem> items = productData.map<ReturnInvoiceItem>((product) {
                     return ReturnInvoiceItem(
                       description: product['productName'],
                       quantity: product['productQuantity'],
-                      unitPrice: (product['returnProductPrice'] as int).toDouble() ,
+                      unitPrice: (product['returnProductPrice'] as int).toDouble(),
                     );
                   }).toList();
-                  print('Good time');
+
                   final invoice = ReturnInvoice(
                     store: ReturnStore(
                       name: storeName,
@@ -94,13 +95,12 @@ class _ReturnPageState extends State<ReturnPage> {
                       returnDate: returnDate,
                       returnTime: returnTime,
                       againstInvoice: againstInvoice,
-                      comment:comment,
+                      comment: comment,
                     ),
                     items: items,
                   );
-                  print('hello');
+
                   final pdfFile = await ReturnPdfInvoiceApi.generate(invoice);
-                  print('hello');
                   ReturnFileHandleApi.openFile(pdfFile);
                 },
                 child: Container(
@@ -118,35 +118,62 @@ class _ReturnPageState extends State<ReturnPage> {
                           Container(
                             height: height * 0.05,
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
                               color: primaryColor,
                             ),
                             child: Center(
                               child: RichText(
                                 text: TextSpan(children: [
-                                  TextSpan(text: 'Return ID : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500, color: white)),
-                                  TextSpan(text: orderData['returnID'], style: textTheme.bodySmall!.copyWith(color: white)),
+                                  TextSpan(
+                                    text: 'Return ID : ',
+                                    style: textTheme.bodySmall!.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: white,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: orderData['returnID'],
+                                    style: textTheme.bodySmall!.copyWith(color: white),
+                                  ),
                                 ]),
                               ),
                             ),
                           ),
                           SizedBox(height: height * 0.01),
                           Container(
-                            padding: EdgeInsets.symmetric(vertical: height * 0.02, horizontal: width * 0.04),
+                            padding: EdgeInsets.symmetric(
+                              vertical: height * 0.02,
+                              horizontal: width * 0.04,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 RichText(
                                   text: TextSpan(children: [
-                                    TextSpan(text: 'Return Date : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                    TextSpan(text: orderData['returnDate'], style: textTheme.bodySmall),
+                                    TextSpan(
+                                      text: 'Return Date : ',
+                                      style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500),
+                                    ),
+                                    TextSpan(
+                                      text: orderData['returnDate'],
+                                      style: textTheme.bodySmall,
+                                    ),
                                   ]),
                                 ),
                                 SizedBox(height: height * 0.01, width: 0),
                                 RichText(
                                   text: TextSpan(children: [
-                                    TextSpan(text: 'Return Time : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                    TextSpan(text: orderData['returnTime'], style: textTheme.bodySmall),
+                                    TextSpan(
+                                      text: 'Return Time : ',
+                                      style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500),
+                                    ),
+                                    TextSpan(
+                                      text: orderData['returnTime'],
+                                      style: textTheme.bodySmall,
+                                    ),
                                   ]),
                                 ),
                                 SizedBox(height: height * 0.01),
@@ -154,15 +181,27 @@ class _ReturnPageState extends State<ReturnPage> {
                                 SizedBox(height: height * 0.01),
                                 RichText(
                                   text: TextSpan(children: [
-                                    TextSpan(text: 'Return Against : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                    TextSpan(text: orderData['returnAgainst'], style: textTheme.bodySmall),
+                                    TextSpan(
+                                      text: 'Return Against : ',
+                                      style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500),
+                                    ),
+                                    TextSpan(
+                                      text: orderData['returnAgainst'],
+                                      style: textTheme.bodySmall,
+                                    ),
                                   ]),
                                 ),
                                 SizedBox(height: height * 0.02),
                                 RichText(
                                   text: TextSpan(children: [
-                                    TextSpan(text: 'total Amount : ', style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500)),
-                                    TextSpan(text: orderData['totalAmount'].toString(), style: textTheme.bodySmall),
+                                    TextSpan(
+                                      text: 'Total Amount : ',
+                                      style: textTheme.bodySmall!.copyWith(fontWeight: FontWeight.w500),
+                                    ),
+                                    TextSpan(
+                                      text: orderData['totalAmount'].toString(),
+                                      style: textTheme.bodySmall,
+                                    ),
                                   ]),
                                 ),
                               ],

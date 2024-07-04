@@ -59,7 +59,7 @@ class _AdminProductsState extends State<AdminProducts> {
           future: fetchProducts(widget.currentVendor['email']), // Pass branch manager ID here
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator(color: primaryColor,));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {

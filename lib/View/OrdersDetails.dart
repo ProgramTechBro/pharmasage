@@ -17,7 +17,7 @@ OrderController controller = OrderController();
 
 class OrdersDetails extends StatefulWidget {
   final String storeId;
-  const OrdersDetails({Key? key,required this.storeId});
+  const OrdersDetails({Key? key, required this.storeId});
 
   @override
   State<OrdersDetails> createState() => _OrdersDetailsState();
@@ -34,6 +34,7 @@ class _OrdersDetailsState extends State<OrdersDetails> {
   ];
   late List<Map<String, dynamic>> orders = []; // Stores the fetched orders
   late List<bool> isOrderCompleting = []; // Track completion status for each order
+  bool isLoading = true; // Track whether data is loading
 
   @override
   void initState() {
@@ -42,16 +43,31 @@ class _OrdersDetailsState extends State<OrdersDetails> {
   }
 
   Future<void> fetchOrders() async {
-    // Fetch orders from Firestore
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('Orders')
-        .where('storeId', isEqualTo: widget.storeId)
-        .get();
     setState(() {
-      orders = querySnapshot.docs.map((doc) => doc.data()).toList();
-      isOrderCompleting = List<bool>.filled(orders.length, false);
+      isLoading = true; // Start loading indicator
     });
+
+    try {
+      // Fetch orders from Firestore
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('Orders')
+          .where('storeId', isEqualTo: widget.storeId)
+          .get();
+
+      setState(() {
+        orders = querySnapshot.docs.map((doc) => doc.data()).toList();
+        isOrderCompleting = List<bool>.filled(orders.length, false);
+        isLoading = false; // Stop loading indicator
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false; // Stop loading indicator on error
+      });
+      print('Error fetching orders: $e');
+      // Handle error or show a message
+    }
   }
+
   Future<Map<String, dynamic>> fetchStoreData(String storeId) async {
     try {
       final DocumentSnapshot storeSnapshot = await FirebaseFirestore.instance
@@ -84,7 +100,7 @@ class _OrdersDetailsState extends State<OrdersDetails> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final textTheme = Theme.of(context).textTheme;
-    final provider=Provider.of<AdminProvider>(context);
+    final provider = Provider.of<AdminProvider>(context);
     final filteredOrders = filterOrdersByCategory(selectedCategory);
 
     return SafeArea(
@@ -136,13 +152,20 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                 Container(
                   height: height * 0.75, // Adjust the height as needed
                   padding: EdgeInsets.symmetric(horizontal: width * 0.02, vertical: height * 0.02),
-                  child: filteredOrders.isEmpty
+                  child: isLoading
+                      ? Center(
+                    child: CircularProgressIndicator(color: primaryColor),
+                  )
+                      : orders.isEmpty
+                      ? Center(
+                    child: Text('No orders for this store',style: textTheme.labelLarge,),
+                  )
+                      : filteredOrders.isEmpty
                       ? Center(
                     child: filteredOrders.isNotEmpty
                         ? CircularProgressIndicator(color: primaryColor)
-                        : Text('No $selectedCategory orders'),
-                  )
-                      : ListView.separated(
+                        : Text('No $selectedCategory orders',style: textTheme.labelLarge,),
+                  ):ListView.separated(
                     itemCount: filteredOrders.length,
                     scrollDirection: Axis.vertical,
                     separatorBuilder: (BuildContext context, int index) {
@@ -181,7 +204,8 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                 ),
                                 CommonFunctions.commonSpace(height * 0.01, 0),
                                 Container(
-                                  padding: EdgeInsets.symmetric(vertical: height * 0.02, horizontal: width * 0.04),
+                                  padding:
+                                  EdgeInsets.symmetric(vertical: height * 0.02, horizontal: width * 0.04),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
@@ -242,21 +266,24 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          provider.role=='Branch Manager'?ElevatedButton(
+                                          provider.role == 'Branch Manager'
+                                              ? ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: primaryColor,
-                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(35)),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(35)),
                                               minimumSize: Size(width * 0.2, height * 0.06),
                                             ),
                                             onPressed: isOrderCompleting[index]
                                                 ? null // Disable button when completing
                                                 : () async {
-                                              if(order['orderStatus']!='Completed'){
+                                              if (order['orderStatus'] != 'Completed') {
                                                 setState(() {
                                                   isOrderCompleting[index] = true; // Mark as completing
                                                 });
                                                 await controller.completeOrder(order['orderID']);
-                                                CommonFunctions.showSuccessToast(context: context, message: 'Order Completed');
+                                                CommonFunctions.showSuccessToast(
+                                                    context: context, message: 'Order Completed');
                                                 setState(() {
                                                   isOrderCompleting[index] = false; // Mark as completed
                                                 });
@@ -273,12 +300,14 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                                 color: Colors.white,
                                               ),
                                             ),
-                                          ):Container(),
+                                          )
+                                              : Container(),
                                           InkWell(
-                                            onTap: () async{
-                                              final store=await fetchStoreData(order['storeId']);
+                                            onTap: () async {
+                                              final store = await fetchStoreData(order['storeId']);
                                               final productData = order['orderedProducts'];
-                                              final List<InvoiceItem> items = productData.map<InvoiceItem>((product) {
+                                              final List<InvoiceItem> items =
+                                              productData.map<InvoiceItem>((product) {
                                                 return InvoiceItem(
                                                   description: product['productName'],
                                                   quantity: product['quantity'],
@@ -306,11 +335,8 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                                 ),
                                                 items: items,
                                               );
-                                              print('hello');
                                               final pdfFile = await PdfInvoiceApi.generate(invoice);
-                                              print('hello');
                                               FileHandleApi.openFile(pdfFile);
-
                                             },
                                             child: Container(
                                               height: height * 0.06,
@@ -322,7 +348,6 @@ class _OrdersDetailsState extends State<OrdersDetails> {
                                               child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
-                                                  //Image.asset('assets/Icons/in.jpeg'),
                                                   Icon(Icons.print, size: 20),
                                                   Text('Invoice',
                                                       style: textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w900)),
