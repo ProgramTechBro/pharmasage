@@ -151,7 +151,7 @@ class _ReceivedOrdersState extends State<ReceivedOrders> {
                                     TextSpan(text: orderData['orderDate'], style: textTheme.bodySmall),
                                   ]),
                                 ),
-                                Center(child: const Text('- - - - - - - - - - - - - - - - - - - -', style: TextStyle(fontSize: 20))),
+                                Center(child: const Text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', style: TextStyle(fontSize: 20))),
                                 CommonFunctions.commonSpace(height * 0.01, 0),
                                 RichText(
                                   text: TextSpan(children: [

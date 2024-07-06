@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pharmasage/Constants/CommonFunctions.dart';
 import 'package:pharmasage/Controller/AdminController/EmployeeController.dart';
 import 'package:pharmasage/Controller/AdminController/StoreController.dart';
+import 'package:pharmasage/Controller/Service/Admin/vendorServices.dart';
 import 'package:pharmasage/Utils/colors.dart';
-
+UserHandler handler=UserHandler();
 class DeleteBranchManagerDialog extends StatefulWidget {
   final String title;
   final String content;
@@ -44,6 +46,7 @@ class _DeleteBranchManagerDialogState extends State<DeleteBranchManagerDialog> {
                 setState(() {
                   _isDeleting = true; // Show circular indicator
                 });
+                await handler.deleteBMUserDocument(context,widget.bId);
                 //await EmployeeController.deleteEmployee(context: context, employeeID: widget.empId,branchID: widget.storeId);
                 print('Helooooooooooooooooooooooooo');
                 Navigator.of(context).pop();

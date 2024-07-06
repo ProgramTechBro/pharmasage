@@ -177,7 +177,7 @@ class _ReturnPageState extends State<ReturnPage> {
                                   ]),
                                 ),
                                 SizedBox(height: height * 0.01),
-                                Center(child: const Text('- - - - - - - - - - - - - - - - - - - -', style: TextStyle(fontSize: 20))),
+                                Center(child: const Text('- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -', style: TextStyle(fontSize: 20))),
                                 SizedBox(height: height * 0.01),
                                 RichText(
                                   text: TextSpan(children: [

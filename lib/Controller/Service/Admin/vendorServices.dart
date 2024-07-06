@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,7 @@ import '../../../Constants/CommonFunctions.dart';
 import 'package:pharmasage/Controller/Provider/Authprovider.dart';
 import '../../../Model/User/vendordetails.dart';
 import '../../../View/Dashboard.dart';
+import 'package:http/http.dart' as http;
 UserController profile=UserController();
 class UserHandler {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -183,4 +185,50 @@ class UserHandler {
       throw Exception('Failed to fetch BranchManager data');
     }
   }
+
+  Future<void> deleteBMUserDocument(BuildContext context,String username) async {
+    try{
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(username)
+          .delete();
+      print('Branch Manager deleted successfully');
+      CommonFunctions.showSuccessToast(context: context, message: 'BM Deleted');
+    }catch(e){
+      print('Error deleting Branch Manager: $e');
+    }
+  }
+
+  // Future<void> deleteBranchManager(String email) async {
+  //   try {
+  //     // Delete the user from Firebase Authentication
+  //     await deleteUserFromAuth(email);
+  //
+  //     // Delete the user document from Firestore
+  //     await deleteBMUserDocument(email);
+  //
+  //     print('Branch Manager deleted successfully');
+  //   } catch (e) {
+  //     print('Error deleting Branch Manager: $e');
+  //   }
+  // }
+  // Future<void> deleteUserFromAuth(String email) async {
+  //   final url = Uri.parse('https://your-backend-server.com/deleteUser'); // Replace with your server URL
+  //   final response = await http.post(
+  //     url,
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({'email': email}),
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     final responseBody = jsonDecode(response.body);
+  //     if (responseBody['success']) {
+  //       print('User deleted successfully from Firebase Authentication');
+  //     } else {
+  //       print('Error: ${responseBody['message']}');
+  //     }
+  //   } else {
+  //     print('Server error: ${response.statusCode}');
+  //   }
+  // }
 }

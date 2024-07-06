@@ -59,16 +59,14 @@ class UserController{
           .then((userCredential) async {
         final user = userCredential.user;
         if (user != null) {
+          //await Provider.of<AdminProvider>(context,listen: false).loadUserDataIntoMemory();
           print('SignInSuccessfully');
-          // detail=await getvendorinfo(email);
           Provider.of<AdminProvider>(context, listen: false).updateLoader();
           CommonFunctions.showSuccessToast(context: context, message: 'Login Successfully');
           print('By');
-          //await Future.delayed(const Duration(seconds: 2));
-          final role = await Provider.of<AdminProvider>(context,listen: false).loadUserDataIntoMemory();
-          //print('Hy');
-          // final role = Provider.of<AdminProvider>(context, listen:false).role;
-          print(role);
+          await Provider.of<AdminProvider>(context,listen: false).loadUserDataIntoMemory();
+          print('ye chal gaya');
+          final role=Provider.of<AdminProvider>(context,listen: false).role;
           if(role=='Pharmacist')
             {
               //print('chalo g pharmacist');
@@ -86,7 +84,6 @@ class UserController{
             Provider.of<AdminProvider>(context,listen: false).updateCurrentBranch(Branchid);
             Navigator.pushReplacement(context, PageTransition(child: storeDashboard(branchID:Branchid,), type: PageTransitionType.rightToLeft));
           }
-
         } else {
           CommonFunctions.showErrorToast(context: context, message: 'Login Failed');
         }
@@ -216,6 +213,7 @@ class UserController{
       if(user.user!=null)
       {
         log('signup successfully');
+        await FirebaseAuth.instance.signOut();
         //String Role=Provider.of<AdminProvider>(context,listen: false).role;
         await services.createNewBM(context: context, details: data);
       }

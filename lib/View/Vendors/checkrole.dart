@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pharmasage/Controller/Provider/Authprovider.dart';
 import 'package:pharmasage/View/MainScreen.dart';
 import 'package:pharmasage/View/Vendors/Checkemail.dart';
 import 'package:pharmasage/View/Vendors/Emailverification.dart';
+import 'package:provider/provider.dart';
 import '../Dashboard.dart';
 import 'LoginPage.dart';
 
@@ -22,7 +24,8 @@ class HomeScreen extends StatelessWidget {
           if (snapshot.hasData && snapshot.data != null) {
             String? email = snapshot.data!.email;
             if (email != null) {
-              return CheckEmailVerified(email: email, key: UniqueKey(),);
+              print('Check role Screen');
+                return CheckEmailVerified(email: email, key: UniqueKey(),);
             } else {
               // Handle case where email is null
               return const Scaffold(

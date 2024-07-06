@@ -126,7 +126,7 @@ class _BranchManagerState extends State<BranchManager> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                common.showDeleteBranchManagerDialog(context,'Delete BranchManager','Are you Sure you want to delete this BranchManager?',username);
+                                                common.showDeleteBranchManagerDialog(context,'Delete BM','Are you Sure you want to delete BM?',username);
                                               },
                                               child: Container(
                                                 height: height * 0.07,

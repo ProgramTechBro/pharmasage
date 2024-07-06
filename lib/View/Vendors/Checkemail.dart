@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:pharmasage/Constants/CommonFunctions.dart';
 import 'package:pharmasage/Controller/AdminController/VendorProfile.dart';
 import 'package:pharmasage/Controller/Provider/Authprovider.dart';
+import 'package:pharmasage/Utils/colors.dart';
 import 'package:pharmasage/View/Dashboard.dart';
 import 'package:pharmasage/View/StoreDashboard.dart';
 import 'package:pharmasage/View/Vendors/Emailverification.dart';
+import 'package:pharmasage/View/Vendors/LoginPage.dart';
 import 'package:pharmasage/View/Vendors/simpleEmail.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +31,7 @@ class _CheckEmailVerifiedState extends State<CheckEmailVerified> {
   @override
   void initState() {
     super.initState();
+    print('initstate');
     isEmailVerified=auth.currentUser!.emailVerified;
     if(!isEmailVerified)
     {
@@ -39,6 +42,7 @@ class _CheckEmailVerifiedState extends State<CheckEmailVerified> {
   }
 
   Future<void> sendVerificationEmail()async{
+    print('send verification screen');
     try{
       final user=auth.currentUser;
       await user!.sendEmailVerification();
@@ -49,7 +53,7 @@ class _CheckEmailVerifiedState extends State<CheckEmailVerified> {
 
   }
   Future<void> checkEmailVerify()async{
-    print('gggggggggggggggg');
+    print('Email Verification Screen');
     await auth.currentUser!.reload();
     setState(() {
       isEmailVerified=auth.currentUser!.emailVerified;
@@ -64,6 +68,7 @@ class _CheckEmailVerifiedState extends State<CheckEmailVerified> {
   Widget build(BuildContext context) {
     if (isEmailVerified) {
       print('yesyesyes');
+      print('Role is ${Provider.of<AdminProvider>(context).role}');
       if(Provider.of<AdminProvider>(context).role=='Pharmacist')
         {
           print('Yaha ha g');
@@ -73,12 +78,16 @@ class _CheckEmailVerifiedState extends State<CheckEmailVerified> {
         {
           return VendorDashboard();
         }
-      else
+      else if(Provider.of<AdminProvider>(context).role=='Branch Manager')
         {
           String bid=Provider.of<AdminProvider>(context).Branchid;
           return storeDashboard(branchID: bid);
         }
-      //return Dashboard();
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: primaryColor,),
+        ),
+      );
     } else {
       //auth.currentUser!.sendEmailVerification();
       return EmailVerificationcomplex(key: UniqueKey(), email: widget.email!);

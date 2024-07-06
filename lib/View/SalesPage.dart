@@ -267,7 +267,7 @@ class _SalesPageState extends State<SalesPage> {
                                       //CommonFunctions.commonSpace(height * 0.01, 0),
                                       Center(
                                         child: const Text(
-                                          '- - - - - - - - - - - - - - - - - - - - -',
+                                          '- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -',
                                           style: TextStyle(fontSize: 20),
                                         ),
                                       ),

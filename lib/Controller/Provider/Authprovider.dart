@@ -153,7 +153,6 @@ class AdminProvider extends ChangeNotifier{
     print(role);
   }
 
-
   removeVendorImage()
   {
     vendorImage=null;
